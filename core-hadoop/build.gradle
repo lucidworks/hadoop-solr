@@ -6,6 +6,7 @@ shadowJar {
   baseName = "solr-${project.name}-${bigDataVersion}"
   classifier = ''
   dependencies {
+    include(dependency("com.lucidworks.hadoop:solr-core-io:.*"))
     include(dependency("org.apache.solr:solr-solrj:${solrVersion}"))
     include(dependency("org.apache.solr:solr-commons-csv:3.5.0"))
     exclude(dependency("org.apache.hadoop:.*"))
