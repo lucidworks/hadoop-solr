@@ -1,0 +1,684 @@
+WARC/1.0
+WARC-Type: warcinfo
+Content-Type: application/warc-fields
+WARC-Date: 2013-01-17T08:22:08Z
+WARC-Record-ID: <urn:uuid:00fee1bb-1abc-45a6-af31-a164c2fdad88>
+WARC-Filename: at.warc.gz
+WARC-Block-Digest: sha1:DOR77CIHLANEVHMQOWYV6IIWRQKAH2GA
+Content-Length: 228
+
+software: Wget/1.14 (darwin10.8.0)
+format: WARC File Format 1.0
+conformsTo: http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf
+robots: classic
+wget-arguments: "http://www.lucidworks.com/" "--warc-file=at" 
+
+
+
+WARC/1.0
+WARC-Type: request
+WARC-Target-URI: http://www.lucidworks.com/
+Content-Type: application/http;msgtype=request
+WARC-Date: 2013-01-17T08:22:09Z
+WARC-Record-ID: <urn:uuid:6ee9accb-a284-47ef-8785-ed28aee2f79e>
+WARC-IP-Address: 216.157.16.159
+WARC-Warcinfo-ID: <urn:uuid:00fee1bb-1abc-45a6-af31-a164c2fdad88>
+WARC-Block-Digest: sha1:KFYHMFUEELX7HQVWW5H5ESEX55NUPH57
+Content-Length: 119
+
+GET / HTTP/1.1
+User-Agent: Wget/1.14 (darwin10.8.0)
+Accept: */*
+Host: www.lucidworks.com
+Connection: Keep-Alive
+
+
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:f584c023-8703-4551-8952-378427f0333d>
+WARC-Warcinfo-ID: <urn:uuid:00fee1bb-1abc-45a6-af31-a164c2fdad88>
+WARC-Concurrent-To: <urn:uuid:6ee9accb-a284-47ef-8785-ed28aee2f79e>
+WARC-Target-URI: http://www.lucidworks.com/
+WARC-Date: 2013-01-17T08:22:09Z
+WARC-IP-Address: 216.157.16.159
+WARC-Block-Digest: sha1:Y6V63OWU7HYPIHEBWXU5QXG2GMUSLYVG
+WARC-Payload-Digest: sha1:S5XHADQ6PX33SOMOZ34PPZR2UOTOVM3C
+Content-Type: application/http;msgtype=response
+Content-Length: 38994
+
+HTTP/1.1 200 OK
+Date: Thu, 17 Jan 2013 08:22:09 GMT
+Server: Apache/2.2.15 (Red Hat)
+X-Powered-By: PHP/5.3.3
+X-Drupal-Cache: HIT
+Etag: "1358408667-0"
+Content-Language: en
+X-UA-Compatible: IE=edge,chrome=1
+Link: </node/2>; rel="shortlink",</lucid-imagination-now-lucidworks>; rel="canonical"
+X-Generator: Drupal 7 (http://drupal.org)
+Cache-Control: public, max-age=0
+Last-Modified: Thu, 17 Jan 2013 07:44:27 +0000
+Expires: Sun, 19 Nov 1978 05:00:00 GMT
+Vary: Cookie,Accept-Encoding
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=utf-8
+
+95fe
+<!DOCTYPE html>
+<!--[if IEMobile 7]><html class="iem7"  lang="en" dir="ltr"><![endif]-->
+<!--[if lte IE 6]><html class="lt-ie9 lt-ie8 lt-ie7"  lang="en" dir="ltr"><![endif]-->
+<!--[if (IE 7)&(!IEMobile)]><html class="lt-ie9 lt-ie8"  lang="en" dir="ltr"><![endif]-->
+<!--[if IE 8]><html class="lt-ie9"  lang="en" dir="ltr"><![endif]-->
+<!--[if (gte IE 9)|(gt IEMobile 7)]><!--><html  lang="en" dir="ltr"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/terms/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:og="http://ogp.me/ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:sioc="http://rdfs.org/sioc/ns#"
+  xmlns:sioct="http://rdfs.org/sioc/types#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"><!--<![endif]-->
+
+<head profile="http://www.w3.org/1999/xhtml/vocab">
+  <meta charset="utf-8" />
+<meta name="keywords" content="big data, big data analytics, unstructured data, big data analysis, big data hadoop, enterprise search, cloud search, cloud search engine, cloud service" />
+<link rel="shortcut icon" href="http://www.lucidworks.com/sites/default/files/favicon_0.ico" type="image/vnd.microsoft.icon" />
+<meta name="description" content="LucidWorks is the leading developer of search, discovery and analytics software based on Apache Lucene and Apache Solr technology." />
+<link rel="shortlink" href="/node/2" />
+<meta name="Generator" content="Drupal 7 (http://drupal.org)" />
+<link rel="canonical" href="/lucid-imagination-now-lucidworks" />
+  <title>Lucid Imagination is now LucidWorks. | LucidWorks</title>
+      <meta name="MobileOptimized" content="width">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="cleartype" content="on">
+
+  <style>@import url("http://www.lucidworks.com/modules/system/system.base.css?mgqah2");
+@import url("http://www.lucidworks.com/modules/system/system.messages.css?mgqah2");
+@import url("http://www.lucidworks.com/modules/system/system.theme.css?mgqah2");</style>
+<style>@import url("http://www.lucidworks.com/sites/all/modules/date/date_api/date.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/date/date_popup/themes/datepicker.1.7.css?mgqah2");
+@import url("http://www.lucidworks.com/modules/field/theme/field.css?mgqah2");
+@import url("http://www.lucidworks.com/modules/node/node.css?mgqah2");
+@import url("http://www.lucidworks.com/modules/user/user.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/views/css/views.css?mgqah2");</style>
+<style>@import url("http://www.lucidworks.com/sites/all/modules/nodequeue_publish/css/nodequeue_publish.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/ctools/css/ctools.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/panels/css/panels.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/libraries/superfish/css/superfish.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/libraries/superfish/css/superfish-vertical.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/libraries/superfish/css/superfish-navbar.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/views_slideshow/views_slideshow.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/layouts/homepage/homepage.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/views_slideshow/contrib/views_slideshow_cycle/views_slideshow_cycle.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/widgets/widgets.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/modules/panels/plugins/layouts/onecol/onecol.css?mgqah2");</style>
+<style>@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/normalize.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/layouts/fixed-width.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/tabs.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/pages.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/blocks.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/navigation.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/views-styles.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/nodes.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/comments.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/forms.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/fields.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/js/fancybox/source/jquery.fancybox.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/fresh.css?mgqah2");
+@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/print.css?mgqah2");</style>
+
+<!--[if lte IE 8]>
+<style>@import url("http://www.lucidworks.com/sites/all/themes/lucid/css/ie8.css?mgqah2");</style>
+<![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src='/sites/all/modules/jquery_update/replace/jquery/jquery.min.js'>\x3C/script>")</script>
+<script src="http://www.lucidworks.com/sites/default/files/js/js_4rPwjcsA1hzlHx2nz9_sLU0PwvjYpTcC3zy11uUsKH4.js"></script>
+<script src="http://www.lucidworks.com/sites/default/files/js/js_zCkuKvC3QeYWJptxD1ajSfLvm_0R4XpYbzsl8D_im3Y.js"></script>
+<script>var _gaq = _gaq || [];_gaq.push(["_setAccount", "UA-8457997-1"]);_gaq.push(["_trackPageview"]);(function() {var ga = document.createElement("script");ga.type = "text/javascript";ga.async = true;ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ga, s);})();</script>
+<script>jQuery(function(){
+jQuery('#superfish-1').supersubs({minWidth: 12, maxWidth: 27, extraWidth: 1}).superfish({
+delay: 400,
+animation: {opacity:'show'},
+speed: 'fast',
+autoArrows: false,
+dropShadows: true}).find('ul').bgIframe({opacity:false});
+});</script>
+<script src="http://www.lucidworks.com/sites/default/files/js/js_tQAz4SUAWlu8qOcna_toGfTlT7tiwe5C7OoUtF9lJz8.js"></script>
+<script>jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":{"theme":"lucid","theme_token":"xjk5-5TErbEjIKEMTasvp2kRf1vIW1PGPek0KTP1y28","js":{"https:\/\/ajax.googleapis.com\/ajax\/libs\/jquery\/1.5.2\/jquery.min.js":1,"0":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/modules\/panels\/js\/panels.js":1,"sites\/all\/libraries\/superfish\/jquery.hoverIntent.minified.js":1,"sites\/all\/libraries\/superfish\/jquery.bgiframe.min.js":1,"sites\/all\/libraries\/superfish\/superfish.js":1,"sites\/all\/libraries\/superfish\/supersubs.js":1,"sites\/all\/libraries\/superfish\/supposition.js":1,"sites\/all\/libraries\/superfish\/sftouchscreen.js":1,"sites\/all\/modules\/views_slideshow\/js\/views_slideshow.js":1,"sites\/all\/libraries\/jquery.cycle\/jquery.cycle.all.js":1,"sites\/all\/libraries\/json2\/json2.js":1,"sites\/all\/modules\/views_slideshow\/contrib\/views_slideshow_cycle\/js\/views_slideshow_cycle.js":1,"sites\/all\/modules\/google_analytics\/googleanalytics.js":1,"1":1,"2":1,"sites\/all\/themes\/lucid\/js\/fancybox\/source\/jquery.fancybox.js":1,"sites\/all\/themes\/lucid\/js\/script.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"sites\/all\/modules\/date\/date_api\/date.css":1,"sites\/all\/modules\/date\/date_popup\/themes\/datepicker.1.7.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/views\/css\/views.css":1,"sites\/all\/modules\/nodequeue_publish\/css\/nodequeue_publish.css":1,"sites\/all\/modules\/ctools\/css\/ctools.css":1,"sites\/all\/modules\/panels\/css\/panels.css":1,"sites\/all\/libraries\/superfish\/css\/superfish.css":1,"sites\/all\/libraries\/superfish\/css\/superfish-vertical.css":1,"sites\/all\/libraries\/superfish\/css\/superfish-navbar.css":1,"sites\/all\/modules\/views_slideshow\/views_slideshow.css":1,"sites\/all\/themes\/lucid\/layouts\/homepage\/homepage.css":1,"sites\/all\/modules\/views_slideshow\/contrib\/views_slideshow_cycle\/views_slideshow_cycle.css":1,"sites\/all\/modules\/widgets\/widgets.css":1,"sites\/all\/modules\/panels\/plugins\/layouts\/onecol\/onecol.css":1,"sites\/all\/themes\/lucid\/system.menus.css":1,"sites\/all\/themes\/lucid\/css\/normalize.css":1,"sites\/all\/themes\/lucid\/css\/layouts\/fixed-width.css":1,"sites\/all\/themes\/lucid\/css\/tabs.css":1,"sites\/all\/themes\/lucid\/css\/pages.css":1,"sites\/all\/themes\/lucid\/css\/blocks.css":1,"sites\/all\/themes\/lucid\/css\/navigation.css":1,"sites\/all\/themes\/lucid\/css\/views-styles.css":1,"sites\/all\/themes\/lucid\/css\/nodes.css":1,"sites\/all\/themes\/lucid\/css\/comments.css":1,"sites\/all\/themes\/lucid\/css\/forms.css":1,"sites\/all\/themes\/lucid\/css\/fields.css":1,"sites\/all\/themes\/lucid\/js\/fancybox\/source\/jquery.fancybox.css":1,"sites\/all\/themes\/lucid\/css\/fresh.css":1,"sites\/all\/themes\/lucid\/css\/print.css":1,"sites\/all\/themes\/lucid\/css\/ie8.css":1}},"viewsSlideshow":{"homepage_slideshow-panel_pane_1":{"methods":{"goToSlide":["viewsSlideshowPager","viewsSlideshowSlideCounter","viewsSlideshowCycle"],"nextSlide":["viewsSlideshowPager","viewsSlideshowSlideCounter","viewsSlideshowCycle"],"pause":["viewsSlideshowControls","viewsSlideshowCycle"],"play":["viewsSlideshowControls","viewsSlideshowCycle"],"previousSlide":["viewsSlideshowPager","viewsSlideshowSlideCounter","viewsSlideshowCycle"],"transitionBegin":["viewsSlideshowPager","viewsSlideshowSlideCounter"],"transitionEnd":[]},"paused":0}},"viewsSlideshowPager":{"homepage_slideshow-panel_pane_1":{"bottom":{"type":"viewsSlideshowPagerFields"}}},"viewsSlideshowPagerFields":{"homepage_slideshow-panel_pane_1":{"bottom":{"activatePauseOnHover":0}}},"viewsSlideshowCycle":{"#views_slideshow_cycle_main_homepage_slideshow-panel_pane_1":{"num_divs":4,"id_prefix":"#views_slideshow_cycle_main_","div_prefix":"#views_slideshow_cycle_div_","vss_id":"homepage_slideshow-panel_pane_1","effect":"fade","transition_advanced":0,"timeout":5000,"speed":700,"delay":0,"sync":1,"random":0,"pause":1,"pause_on_click":1,"action_advanced":1,"start_paused":1,"remember_slide":0,"remember_slide_days":1,"pause_when_hidden":0,"pause_when_hidden_type":"full","amount_allowed_visible":"","nowrap":0,"fixed_height":1,"items_per_slide":1,"wait_for_image_load":1,"wait_for_image_load_timeout":3000,"cleartype":1,"cleartypenobg":0,"advanced_options":"{\u0022delay\u0022:\u0022200\u0022}","advanced_options_choices":0,"advanced_options_entry":""}},"googleanalytics":{"trackOutbound":1,"trackMailto":1,"trackDownload":1,"trackDownloadExtensions":"7z|aac|arc|arj|asf|asx|avi|bin|csv|doc|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls|xml|z|zip"}});</script>
+      <!--[if lt IE 9]>
+    <script src="/sites/all/themes/zen/js/html5-respond.js"></script>
+    <![endif]-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,600,400italic' rel='stylesheet' type='text/css'>
+<meta name="google-site-verification" content="zmqLmx2fcOv-YeA24EAYzx5YDJq3CeAX94YODuRCuus" />
+</head>
+<body class="html front not-logged-in no-sidebars page-node page-node- page-node-2 node-type-homepage homepage" >
+      <p id="skip-link">
+      <a href="#main-menu" class="element-invisible element-focusable">Jump to navigation</a>
+    </p>
+          <div id="content" class="column" role="main">
+      <a id="main-content"></a>
+            
+
+
+<div class="panel-display" >
+
+  <div class="header-wrapper">
+    <div class="centered">
+      <div class="panel-pane pane-panels-mini pane-header" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="panel-display panel-1col clearfix" id="mini-panel-header">
+  <div class="panel-panel panel-col">
+    <div><div class="panel-pane pane-page-logo" >
+  
+      
+  
+  <div class="pane-content">
+    <a href="/" rel="home" id="logo" title="Home"><img src="http://www.lucidworks.com/sites/all/themes/lucid/logo.png" alt="Home" /></a>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-custom pane-3 header-search" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="search-form">
+<form method="get" action="http://www.lucidworks.com/site-search"><input type="text" id="search" name="search_token" class="search" placeholder="" /><input id="submit" type="submit" value="Search" /></form>
+<p>Powered by LucidWorks</p>
+</div>
+  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-block pane-menu-menu-header-links header-links" >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="http://info.lucidworks.com/blog" target="_parent">Blog</a></li>
+<li class="leaf"><a href="http://support.lucidworks.com" target="_parent">Support Portal</a></li>
+<li class="last leaf"><a href="/about-us/contact-us" target="_parent">Contact</a></li>
+</ul>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-block pane-superfish-1 header-main-menu" >
+  
+      
+  
+  <div class="pane-content">
+    <ul id="superfish-1" class="sf-menu main-menu sf-horizontal sf-style-none sf-total-items-4 sf-parent-items-3 sf-single-items-1"><li id="menu-704-1" class="first odd sf-item-1 sf-depth-1 sf-total-children-2 sf-parent-children-1 sf-single-children-1 menuparent"><a href="/lucidworks-product-suite" title="Products" class="sf-depth-1  menuparent">Products</a><ul><li id="menu-619-1" class="first odd sf-item-1 sf-depth-2"><a href="/products/lucidworks-search" title="LucidWorks Search" class="sf-depth-2 ">LucidWorks Search</a></li><li id="menu-618-1" class="last even sf-item-2 sf-depth-2 sf-no-children"><a href="/products/lucidworks-big-data" title="LucidWorks Big Data" class="sf-depth-2 ">LucidWorks Big Data</a></li></ul></li><li id="menu-622-1" class="middle even sf-item-2 sf-depth-1 sf-total-children-3 sf-parent-children-1 sf-single-children-2 menuparent"><a href="/support-services" title="Support &amp; Services" class="sf-depth-1  menuparent">Support &amp; Services</a><ul><li id="menu-847-1" class="first odd sf-item-1 sf-depth-2 sf-no-children"><a href="/support-services/consulting" title="Consulting" class="sf-depth-2 ">Consulting</a></li><li id="menu-773-1" class="middle even sf-item-2 sf-depth-2"><a href="/support-services/lucidworks-university" title="LucidWorks University" class="sf-depth-2 ">LucidWorks University</a></li><li id="menu-623-1" class="last odd sf-item-3 sf-depth-2 sf-no-children"><a href="/support-services/lucene-solr-support" title="Lucene/Solr Support Services" class="sf-depth-2 ">Lucene/Solr Support</a></li></ul></li><li id="menu-624-1" class="middle odd sf-item-3 sf-depth-1 sf-no-children"><a href="/resources" title="Resources" class="sf-depth-1 ">Resources</a></li><li id="menu-625-1" class="last even sf-item-4 sf-depth-1 sf-total-children-10 sf-parent-children-2 sf-single-children-8 menuparent"><a href="/about-us" title="About Us" class="sf-depth-1  menuparent">About Us</a><ul><li id="menu-627-1" class="first odd sf-item-1 sf-depth-2"><a href="/about-us/management" title="Management" class="sf-depth-2 ">Management</a></li><li id="menu-765-1" class="middle even sf-item-2 sf-depth-2 sf-no-children"><a href="/about-us/board-directors" title="Board of Directors" class="sf-depth-2 ">Board of Directors</a></li><li id="menu-766-1" class="middle odd sf-item-3 sf-depth-2 sf-no-children"><a href="/about-us/apache-lucenesolr-committers" title="Committers" class="sf-depth-2 ">Committers</a></li><li id="menu-763-1" class="middle even sf-item-4 sf-depth-2"><a href="/about-us/strategic-alliances-and-implementation-partners" title="Partners" class="sf-depth-2 ">Partners</a></li><li id="menu-772-1" class="middle odd sf-item-5 sf-depth-2 sf-no-children"><a href="/about-us/events" title="Events" class="sf-depth-2 ">Events</a></li><li id="menu-770-1" class="middle even sf-item-6 sf-depth-2 sf-no-children"><a href="/about-us/press-releases" title="Press Releases" class="sf-depth-2 ">Press Releases</a></li><li id="menu-769-1" class="middle odd sf-item-7 sf-depth-2 sf-no-children"><a href="/about-us/news" title="News" class="sf-depth-2 ">News</a></li><li id="menu-849-1" class="middle even sf-item-8 sf-depth-2 sf-no-children"><a href="/about-us/careers" title="Careers" class="sf-depth-2 ">Careers</a></li><li id="menu-630-1" class="middle odd sf-item-9 sf-depth-2 sf-no-children"><a href="/about-us/contact-us" title="Contact Us" class="sf-depth-2 ">Contact Us</a></li><li id="menu-951-1" class="last even sf-item-10 sf-depth-2 sf-no-children"><a href="/about-us/faq" title="LucidWorks FAQ" class="sf-depth-2 ">FAQ</a></li></ul></li></ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+</div>
+  </div>
+
+  
+  </div>
+    </div>
+  </div>
+
+  <div class="feature-wrapper">
+    <div class="centered">
+      <img class="home-left-tri" src="/sites/all/themes/lucid/images/page_triangle_l.png" />
+      <div class="panel-pane pane-views-panes pane-homepage-slideshow-panel-pane-1" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="view view-homepage-slideshow view-id-homepage_slideshow view-display-id-panel_pane_1 view-dom-id-9d971ff65cf90f3f73a680c5b384146e">
+        
+  
+  
+      <div class="view-content">
+      
+<div class="skin-default">
+  
+  <div id="views_slideshow_cycle_main_homepage_slideshow-panel_pane_1" class="views_slideshow_cycle_main views_slideshow_main"><div id="views_slideshow_cycle_teaser_section_homepage_slideshow-panel_pane_1" class="views-slideshow-cycle-main-frame views_slideshow_cycle_teaser_section">
+  <div id="views_slideshow_cycle_div_homepage_slideshow-panel_pane_1_0" class="views-slideshow-cycle-main-frame-row views_slideshow_cycle_slide views_slideshow_slide views-row-1 views-row-odd">
+  <div class="views-slideshow-cycle-main-frame-row-item views-row views-row-0 views-row-first views-row-odd">
+    
+  <div class="slide-heading-wrap">        <div class="slide-heading"><div class="item-list"><ul><li class="first">Search</li>
+<li>Discover</li>
+<li class="last">Analyze</li>
+</ul></div></div>  </div>  
+  <div class="slide-body">        <div><p>LucidWorks turns multi-structured data into business gold – regardless of its volume, velocity or variety</p>
+</div>  </div>  
+  <div class="slide-link">        <div><a href="/lucidworks-product-suite">Learn more about the LucidWorks Product Suite</a></div>  </div>  
+  <div class="views-field views-field-field-slide-image">        <div class="field-content"><img typeof="foaf:Image" src="http://www.lucidworks.com/sites/default/files/LW_Ovrvw.png" width="990" height="308" alt="" /></div>  </div></div>
+</div>
+<div id="views_slideshow_cycle_div_homepage_slideshow-panel_pane_1_1" class="views-slideshow-cycle-main-frame-row views_slideshow_cycle_slide views_slideshow_slide views-row-2 views_slideshow_cycle_hidden views-row-even">
+  <div class="views-slideshow-cycle-main-frame-row-item views-row views-row-0 views-row-first views-row-odd">
+    
+  <div class="slide-heading-wrap">        <h1 class="slide-heading">LucidWorks Search</h1>  </div>  
+  <div class="slide-body">        <div><p>Organizations of all sizes have the need to retrieve and track digital information stored within their various internal sources. Easily build and deploy these search-based applications with LucidWorks Search.</p>
+</div>  </div>  
+  <div class="slide-link">        <div><a href="/products/lucidworks-search">Learn more about LucidWorks Search</a></div>  </div>  
+  <div class="views-field views-field-field-slide-image">        <div class="field-content"><img typeof="foaf:Image" src="http://www.lucidworks.com/sites/default/files/LW_Search.png" width="990" height="308" alt="" /></div>  </div></div>
+</div>
+<div id="views_slideshow_cycle_div_homepage_slideshow-panel_pane_1_2" class="views-slideshow-cycle-main-frame-row views_slideshow_cycle_slide views_slideshow_slide views-row-3 views_slideshow_cycle_hidden views-row-odd">
+  <div class="views-slideshow-cycle-main-frame-row-item views-row views-row-0 views-row-first views-row-odd">
+    
+  <div class="slide-heading-wrap">        <h1 class="slide-heading">LucidWorks Big Data</h1>  </div>  
+  <div class="slide-body">        <div><p>Every organization has a massive amount of multi-structured data spread across multiple internal and external systems and geographies. Search, Discover and Analyze this Dark Data with LucidWorks Big Data.</p>
+</div>  </div>  
+  <div class="slide-link">        <div><a href="/products/lucidworks-big-data">Learn more about LucidWorks Big Data</a></div>  </div>  
+  <div class="views-field views-field-field-slide-image">        <div class="field-content"><img typeof="foaf:Image" src="http://www.lucidworks.com/sites/default/files/LW_BigData.png" width="990" height="308" alt="" /></div>  </div></div>
+</div>
+<div id="views_slideshow_cycle_div_homepage_slideshow-panel_pane_1_3" class="views-slideshow-cycle-main-frame-row views_slideshow_cycle_slide views_slideshow_slide views-row-4 views_slideshow_cycle_hidden views-row-even">
+  <div class="views-slideshow-cycle-main-frame-row-item views-row views-row-0 views-row-first views-row-odd">
+    
+  <div class="slide-heading-wrap">        <h1 class="slide-heading">LucidWorks University</h1>  </div>  
+  <div class="slide-body">        <div><p>Classroom and on-site training options for Lucene/Solr.</p>
+</div>  </div>  
+  <div class="slide-link">        <div><a href="/support-services/lucid-university">Learn more about LucidWorks University</a></div>  </div>  
+  <div class="views-field views-field-field-slide-image">        <div class="field-content"><img typeof="foaf:Image" src="http://www.lucidworks.com/sites/default/files/LW_University_3.png" width="990" height="308" alt="" /></div>  </div></div>
+</div>
+</div>
+</div>
+      <div class="views-slideshow-controls-bottom clearfix">
+      <div id="widget_pager_bottom_homepage_slideshow-panel_pane_1" class="views-slideshow-pager-fields widget_pager widget_pager_bottom views_slideshow_pager_field">
+  <div id="views_slideshow_pager_field_item_bottom_homepage_slideshow-panel_pane_1_0" class="views-slideshow-pager-field-item views_slideshow_pager_field_item views_slideshow_active_pager_field_item views-row-odd">
+  <div class="views-field-field-control-button-text">
+    <div class="views-content-field-control-button-text">
+    LucidWorks Overview  </div>
+</div>
+</div>
+<div id="views_slideshow_pager_field_item_bottom_homepage_slideshow-panel_pane_1_1" class="views-slideshow-pager-field-item views_slideshow_pager_field_item views-row-even">
+  <div class="views-field-field-control-button-text">
+    <div class="views-content-field-control-button-text">
+    LucidWorks Search  </div>
+</div>
+</div>
+<div id="views_slideshow_pager_field_item_bottom_homepage_slideshow-panel_pane_1_2" class="views-slideshow-pager-field-item views_slideshow_pager_field_item views-row-odd">
+  <div class="views-field-field-control-button-text">
+    <div class="views-content-field-control-button-text">
+    LucidWorks Big Data  </div>
+</div>
+</div>
+<div id="views_slideshow_pager_field_item_bottom_homepage_slideshow-panel_pane_1_3" class="views-slideshow-pager-field-item views_slideshow_pager_field_item views-row-even">
+  <div class="views-field-field-control-button-text">
+    <div class="views-content-field-control-button-text">
+    LucidWorks University  </div>
+</div>
+</div>
+</div>
+    </div>
+  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+      <img class="home-right-tri" src="/sites/all/themes/lucid/images/page_triangle_r.png" />
+    </div>
+  </div>
+
+  <div class="headline-wrapper">
+    <div class="centered">
+      <div class="panel-pane pane-views-panes pane-webinars-panel-pane-1" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="view view-webinars view-id-webinars view-display-id-panel_pane_1 view-dom-id-b9f7971ce9b336edf807b4973a39fa49">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="webinar-cta-title">        <span>Webinar: <a href="http://programs.lucidworks.com/MapRwebinar1212_ContentLP.html" target="_blank">Crowd Sourcing Reflected Intelligence Using Search and Big Data</a></span>  </div>  
+  <div class="webinar-cta-btn">        <span><a href="http://programs.lucidworks.com/MapRwebinar1212_ContentLP.html" target="_blank">Check it Out</a></span>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="centered">
+      <div class="main-1 btm-col">          
+        <div class="panel-pane pane-views-panes pane-homepage-feature-panel-pane-1" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="view view-homepage-feature view-id-homepage_feature view-display-id-panel_pane_1 view-dom-id-506f763afee43f0547be89a76c16beba">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">
+      
+  <div class="home-feature-link">        <span><a href="http://programs.lucidworks.com/GigaOmComputingforDisasters_ContentLP.html" target="_blank">Computing for disasters: saving lives with big data</a></span>  </div>  
+  <div>        <div><a href="http://programs.lucidworks.com/GigaOmComputingforDisasters_ContentLP.html" target="_blank"><img typeof="foaf:Image" src="http://www.lucidworks.com/sites/default/files/home_featured/GigaOm-Computing-for-disasters-webinar.jpg" width="210" height="79" alt="" /></a></div>  </div>  
+  <div class="views-field views-field-field-text-blurb">        <div class="field-content"><p> In this webinar, we’ll examine the opportunities for search and analysis in disaster recovery, along with issues such as the sources of big data and the ways the general population can both provide and consume data before, during, and after a disaster.</p>
+</div>  </div>  
+  <div class="views-field views-field-edit-node">        <span class="field-content"></span>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+      </div>
+      <div class="main-2 btm-col">          
+        <div class="panel-pane pane-views-panes pane-press-releases-panel-pane-1" >
+  
+        <h2 class="pane-title">News</h2>
+    
+  
+  <div class="pane-content">
+    <div class="view view-press-releases view-id-press_releases view-display-id-panel_pane_1 view-dom-id-a39037fc4f7e173f7c6d8a78580b5875">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first">
+      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/new-idea-engineering-team-joins-lucidworks">New Idea Engineering Team Joins LucidWorks</a></span>  </div>  
+  <div class="views-field views-field-created">        <span class="field-content">December 13, 2012</span>  </div>  </div>
+  <div class="views-row views-row-2 views-row-even views-row-last">
+      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/lucidworks-rapidly-emerging-go-vendor-enterprise-search-market-notes-frost-sullivan">LucidWorks is Rapidly Emerging as the Go-To Vendor in the Enterprise Search Market, Notes Frost &amp; Sullivan</a></span>  </div>  
+  <div class="views-field views-field-created">        <span class="field-content">December 10, 2012</span>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-views-panes pane-events-panel-pane-1" >
+  
+        <h2 class="pane-title">Events</h2>
+    
+  
+  <div class="pane-content">
+    <div class="view view-events view-id-events view-display-id-panel_pane_1 view-dom-id-a452aeb9267856c4ef833f55959e4d88">
+        
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first">
+      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/about-us/events/SFbay-meetup-jan2013">2013 Kickoff! SFBay Apache Lucene/Solr Meetup</a></span>  </div>  
+  <div class="views-field views-field-field-event-date">        <div class="field-content">January 17, 2013</div>  </div>  </div>
+  <div class="views-row views-row-2 views-row-even views-row-last">
+      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/about-us/events/strata-conference-2013">Strata Conference 2013</a></span>  </div>  
+  <div class="views-field views-field-field-event-date">        <div class="field-content">February 26 - 28, 2013</div>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+      </div>
+      <div class="main-3 btm-col">          
+        <div class="panel-pane pane-custom pane-1" >
+  
+        <h2 class="pane-title">Committers</h2>
+    
+  
+  <div class="pane-content">
+    <p>Employing one quarter of the Core Committers to the Apache Lucene/Solr project, LucidWorks is the largest supporter of open source search in the industry. </p>
+<p><a href="/about-us/apache-lucene-solr-committers">find out more »</a></p>
+  </div>
+
+  
+  </div>
+      </div>
+      <div class="main-4 btm-col">          
+        <div class="panel-pane pane-node-title feature-right-title" >
+  
+      
+  
+  <div class="pane-content">
+    DevZone is Moving  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-entity-field pane-node-field-text-blurb feature-blurb" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="field field-name-field-text-blurb field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p><a href="http://searchhub.org" target="_blank">Visit <strong>SearchHub</strong>, your go to place for all things Lucene/Solr<br /><span style="font-size:11px;">check it out »</span></a></p>
+</div></div></div>  </div>
+
+  
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-wrapper">
+    <div class="centered">
+      <div><div class="panel-pane pane-panels-mini pane-footer" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="panel-display panel-1col clearfix" id="mini-panel-footer">
+  <div class="panel-panel panel-col">
+    <div><div class="panel-pane pane-menu-tree pane-menu-footer-sitemap" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="menu-block-wrapper menu-block-ctools-menu-footer-sitemap-1 menu-name-menu-footer-sitemap parent-mlid-menu-footer-sitemap:0 menu-level-1">
+  <ul class="menu"><li class="first expanded menu-mlid-958"><a href="/lucidworks-product-suite" target="_parent">Products</a><ul class="menu"><li class="first leaf menu-mlid-959"><a href="/products/lucidworks-search" target="_parent">LucidWorks Search</a></li>
+<li class="last leaf menu-mlid-960"><a href="/products/lucidworks-big-data" target="_parent">LucidWorks Big Data</a></li>
+</ul></li>
+<li class="expanded menu-mlid-961"><a href="/support-services" target="_parent">Support &amp; Services</a><ul class="menu"><li class="first leaf menu-mlid-962"><a href="/support-services/consulting" target="_parent">Consulting</a></li>
+<li class="leaf menu-mlid-963"><a href="/support-services/lucidworks-university" target="_parent">LucidWorks University</a></li>
+<li class="last leaf menu-mlid-964"><a href="/support-services/lucene-solr-support" target="_parent">Lucene/Solr Support</a></li>
+</ul></li>
+<li class="leaf menu-mlid-965"><a href="/resources" target="_parent">Resources</a></li>
+<li class="expanded menu-mlid-966"><a href="/about-us/news" target="_parent">News</a><ul class="menu"><li class="first leaf menu-mlid-967"><a href="/about-us/news" target="_parent">News Coverage</a></li>
+<li class="leaf menu-mlid-968"><a href="/about-us/press-releases" target="_parent">Press Releases</a></li>
+<li class="leaf menu-mlid-969"><a href="/about-us/events" target="_parent">Events</a></li>
+<li class="last leaf menu-mlid-970"><a href="http://info.lucidworks.com/blog" target="_parent">Blog</a></li>
+</ul></li>
+<li class="expanded menu-mlid-971"><a href="/about-us" target="_parent">Company</a><ul class="menu"><li class="first leaf menu-mlid-972"><a href="/about-us/management" target="_parent">Management</a></li>
+<li class="leaf menu-mlid-973"><a href="/about-us/board-directors" target="_parent">Board of Directors</a></li>
+<li class="leaf menu-mlid-974"><a href="/about-us/apache-lucenesolr-committers" target="_parent">Committers</a></li>
+<li class="leaf menu-mlid-975"><a href="/about-us/strategic-alliances-and-implementation-partners" target="_parent">Partners</a></li>
+<li class="leaf menu-mlid-976"><a href="/about-us/careers" target="_parent">Careers</a></li>
+<li class="last leaf menu-mlid-978"><a href="http://info.lucidworks.com/blog" target="_parent">Blog</a></li>
+</ul></li>
+<li class="last expanded menu-mlid-979"><a href="/about-us/contact-us" target="_parent">Contact</a><ul class="menu"><li class="first leaf menu-mlid-980"><a href="http://programs.lucidworks.com/Contact-LucidWorks-University.html" target="_parent">Training</a></li>
+<li class="leaf menu-mlid-981"><a href="http://support.lucidworks.com/" target="_parent">Support</a></li>
+<li class="leaf menu-mlid-982"><a href="http://programs.lucidworks.com/Please-Contact-Me-Sales.html" target="_parent">Sales</a></li>
+<li class="last leaf menu-mlid-983"><a href="/about-us/contact-us" target="_parent">General</a></li>
+</ul></li>
+</ul></div>
+  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-block pane-widgets-s-socialmedia-profile-default footer-share-links" >
+  
+      
+  
+  <div class="pane-content">
+    <div id="widgets-element-socialmedia_profile-default" class="widgets widgets-set widgets-set-horizontal widgets-style-horizontal"><div id="widgets-element-socialmedia_socialmedia-twitter-profile-button" class="widgets widgets-element widgets-element-horizontal widgets-style-horizontal"><a href="http://twitter.com/LucidImagineer" title="Visit @LucidImagineer on Twitter" target="_blank"><img src="/sites/all/modules/socialmedia/icons/levelten/glossy/16x16/twitter.png" alt="Twitter icon" ></a></div><div id="widgets-element-socialmedia_socialmedia-facebook-profile-button" class="widgets widgets-element widgets-element-horizontal widgets-style-horizontal"><a href="http://www.facebook.com/pages/Lucid-Imagination/245360168771" title="Visit Lucid Imagination on Facebook" target="_blank"><img src="/sites/all/modules/socialmedia/icons/levelten/glossy/16x16/facebook.png" alt="Facebook icon" ></a></div><div id="widgets-element-socialmedia_socialmedia-linkedin-profile-button" class="widgets widgets-element widgets-element-horizontal widgets-style-horizontal"><a href="http://www.linkedin.com/company/lucidworks" title="Visit LucidWorks on LinkedIn" target="_blank"><img src="/sites/all/modules/socialmedia/icons/levelten/glossy/16x16/linkedin.png" alt="LinkedIn icon" ></a></div><div id="widgets-element-socialmedia_socialmedia-youtube-profile-button" class="widgets widgets-element widgets-element-horizontal widgets-style-horizontal"><a href="http://www.youtube.com/user/lucidworkssearch" title="Visit LucidWorksSearch on YouTube" target="_blank"><img src="/sites/all/modules/socialmedia/icons/levelten/glossy/16x16/youtube.png" alt="YouTube icon" ></a></div><div class="widgets-clear"></div></div>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-block pane-menu-menu-footer-links footer-menu-links" >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/copyrights-and-disclaimers" target="_parent">Copyrights and Disclaimers</a></li>
+<li class="leaf"><a href="/privacy-policy" target="_parent">Privacy Policy</a></li>
+<li class="leaf"><a href="/terms-use" target="_parent">Terms of Use</a></li>
+<li class="last leaf"><a href="http://support.lucidworks.com" target="_parent">Support Portal</a></li>
+</ul>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-custom pane-2 footer-copyright-wrap" >
+  
+      
+  
+  <div class="pane-content">
+    <p class="products-copyright">Apache Solr, Solr, Apache Lucene, Lucene and their logos are trademarks of the Apache Software Foundation.</p>
+<p class="year-copyright">© 2012 LucidWorks. All Right reserved.</p>
+  </div>
+
+  
+  </div>
+</div>
+  </div>
+</div>
+  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-entity-field pane-node-meta-description" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="field field-name-meta-description field-type-metatags-quick field-label-hidden"><div class="field-items"></div></div>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-entity-field pane-node-meta-keywords" >
+  
+      
+  
+  <div class="pane-content">
+    <div class="field field-name-meta-keywords field-type-metatags-quick field-label-hidden"><div class="field-items"></div></div>  </div>
+
+  
+  </div>
+</div>
+    </div>
+  </div>
+  
+</div><!-- block__no_wrapper -->
+<!-- region__no_wrapper -->
+                      </div><!-- /#content -->
+    
+  <!-- Start of Mkto Code  -->
+  <script type="text/javascript">
+    document.write(unescape("%3Cscript src='" + document.location.protocol + "//munchkin.marketo.net/munchkin.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script>Munchkin.init('579-JML-927');</script>
+
+  <!-- End of Mkto Code. -->
+
+  <!-- Start of HubSpot Logging Code  -->
+
+  <script type="text/javascript" language="javascript">
+  var hs_portalid=161353;
+  var hs_salog_version = "2.00";
+  var hs_ppa = "lucidimagination1.app12.hubspot.com";
+  document.write(unescape("%3Cscript src='" + document.location.protocol + "//" + hs_ppa + "/salog.js.aspx' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+
+  <!-- End of HubSpot Logging Code. -->
+
+</body>
+</html>
+
+0
+
+
+
+WARC/1.0
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>
+WARC-Warcinfo-ID: <urn:uuid:00fee1bb-1abc-45a6-af31-a164c2fdad88>
+WARC-Target-URI: metadata://gnu.org/software/wget/warc/MANIFEST.txt
+WARC-Date: 2013-01-17T08:22:09Z
+WARC-Block-Digest: sha1:TKASOEFXAVSVRZDVEV54XDDWT4MXR7YQ
+Content-Type: text/plain
+Content-Length: 48
+
+<urn:uuid:00fee1bb-1abc-45a6-af31-a164c2fdad88>
+
+
+WARC/1.0
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>
+WARC-Warcinfo-ID: <urn:uuid:00fee1bb-1abc-45a6-af31-a164c2fdad88>
+WARC-Target-URI: metadata://gnu.org/software/wget/warc/wget_arguments.txt
+WARC-Date: 2013-01-17T08:22:09Z
+WARC-Block-Digest: sha1:GI3V544RGGIVKYF3UMOBYMNXTN3UNOVI
+Content-Type: text/plain
+Content-Length: 47
+
+"http://www.lucidworks.com/" "--warc-file=at" 
+
+
+WARC/1.0
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:ccea02fa-a954-4c19-ace2-72a73b04d95d>
+WARC-Warcinfo-ID: <urn:uuid:00fee1bb-1abc-45a6-af31-a164c2fdad88>
+WARC-Concurrent-To: <urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>
+WARC-Target-URI: metadata://gnu.org/software/wget/warc/wget.log
+WARC-Date: 2013-01-17T08:22:09Z
+WARC-Block-Digest: sha1:UKCZHMRTUQZPC2OQUY6SHZ44ZKLJTSNL
+Content-Type: text/plain
+Content-Length: 454
+
+Opening WARC file ‘at.warc.gz’.
+
+--2013-01-17 00:22:08--  http://www.lucidworks.com/
+Resolving www.lucidworks.com... 216.157.16.159
+Connecting to www.lucidworks.com|216.157.16.159|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.1’
+
+     0K .......... .......... .......... .......                177K=0.2s
+
+2013-01-17 00:22:09 (177 KB/s) - ‘index.html.1’ saved [38398]
+
+
+
+

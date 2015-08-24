@@ -1,0 +1,78 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.moowork.gradle:gradle-node-plugin:0.7'
+    classpath "no.nils:wsdl2java:0.6"
+  }
+}
+
+plugins {
+  id 'com.github.johnrengelman.shadow' version '1.2.1'
+}
+
+task checkRequiredProperties() {
+  if (!project.hasProperty("lucidNexusUsername")) {
+    throw new GradleException('missing lucidNexusUsername. Configure in ~/.gradle/gradle.properties per the README.txt')
+  }
+  if (!project.hasProperty("lucidNexusPassword")) {
+    throw new GradleException('missing lucidNexusPassword. Configure in ~/.gradle/gradle.properties per the README.txt')
+  }
+}
+checkRequiredProperties
+
+subprojects {
+  apply plugin: "maven"
+  apply plugin: "java"
+  apply plugin: 'project-report'
+  apply plugin: 'jacoco'
+  apply plugin: 'com.github.johnrengelman.shadow'
+
+  group = 'com.lucidworks.hadoop'
+
+  repositories {
+    maven {
+      url "https://nexus.lucidworks.com/content/groups/public"
+      credentials {
+        username "$lucidNexusUsername"
+        password "$lucidNexusPassword"
+      }
+    }
+  }
+
+  configurations {
+    solrtest
+  }
+
+  dependencies {
+    compile("org.apache.solr:solr-solrj:${solrVersion}")
+    compile("org.apache.hadoop:hadoop-common:${hadoop2Version}@jar")
+    compile("org.apache.hadoop:hadoop-client:${hadoop2Version}")
+    compile("org.apache.hadoop:hadoop-auth:${hadoop2Version}") {
+      transitive = false
+    }
+    compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoop2Version}") {
+      transitive = false
+    }
+    compile("org.apache.hadoop:hadoop-hdfs:${hadoop2Version}@jar") {
+      transitive = false
+    }
+
+    testCompile 'com.carrotsearch.randomizedtesting:junit4-ant:1.4.0'
+    testCompile "org.apache.lucene:lucene-analyzers-common:${solrVersion}"
+    testCompile "commons-collections:commons-collections:3.2.1"
+
+    solrtest "org.apache.solr:solr-test-framework:${solrVersion}"
+    solrtest "org.apache.hadoop:hadoop-test:2.0.0-mr1-cdh4.1.2"
+    solrtest "org.apache.mrunit:mrunit:1.0.0:hadoop2@jar"
+  }
+
+  jacocoTestReport {
+    reports {
+      xml.enabled false
+      csv.enabled false
+      html.destination "${buildDir}/jacocoHtml"
+    }
+  }
+}

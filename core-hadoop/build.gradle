@@ -1,0 +1,61 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+  zip64 true
+  mergeServiceFiles()
+  baseName = "solr-${project.name}-${bigDataVersion}"
+  classifier = ''
+  dependencies {
+    include(dependency("org.apache.solr:solr-solrj:${solrVersion}"))
+    include(dependency("org.apache.solr:solr-commons-csv:3.5.0"))
+    exclude(dependency("org.apache.hadoop:.*"))
+    exclude(dependency("org.apache.zookeper:.*"))
+    include(dependency("org.apache.mahout:mahout-core:${mahoutVersion}"))
+    include(dependency("org.apache.mahout:mahout-math:${mahoutVersion}"))
+    include(dependency("org.apache.mahout:mahout-integration:${mahoutVersion}"))
+    include(dependency("org.apache.mahout.commons:commons-cli:2.0-mahout"))
+    include(dependency('org.apache.httpcomponents:httpclient:.*'))
+    include(dependency('org.apache.httpcomponents:httpcore:.*'))
+    include(dependency('org.apache.httpcomponents:httpmime:.*'))
+    include(dependency('org.noggit:noggit:.*'))
+  }
+  relocate 'org.apache.http', 'shaded.org.apache.http'
+  relocate 'org.apache.solr', 'shaded.org.apache.solr'
+}
+
+dependencies {
+  compile("com.lucidworks.hadoop:solr-core-io:${bigDataVersion}") {
+    transitive = false
+  }
+  compile("org.apache.solr:solr-commons-csv:3.5.0")
+  compile("org.apache.mahout:mahout-core:${mahoutVersion}") {
+    transitive = false
+  }
+  // TODO:check deps
+  compile("org.apache.mahout:mahout-math:${mahoutVersion}") {
+    transitive = false
+  }
+  compile("org.apache.mahout:mahout-integration:${mahoutVersion}") {
+    exclude group: "log4j"
+    exclude group: "org.slf4j"
+    exclude group: "javax.servlet", module: "servlet-api"
+    exclude group: " org.apache.lucene"
+    transitive = false
+  }
+  compile("org.apache.mahout.commons:commons-cli:2.0-mahout") {
+    transitive = false
+  }
+  compile files('libs/jruby-complete-1.7.11.jar')
+  compile files('libs/logStash-grok.jar')
+
+  testCompile("com.lucidworks.hadoop:solr-hadoop-testbase:${bigDataVersion}")
+}
+
+test {
+
+  sourceSets.test.compileClasspath = configurations.solrtest + sourceSets.test.compileClasspath
+  sourceSets.test.runtimeClasspath = configurations.solrtest + sourceSets.test.runtimeClasspath
+
+  systemProperty 'test.resources.dir', "src/test/resources"
+}
+
