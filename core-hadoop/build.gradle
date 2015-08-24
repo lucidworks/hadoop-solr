@@ -1,4 +1,4 @@
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven-publish'
 
 shadowJar {
   zip64 true
@@ -60,3 +60,13 @@ test {
   systemProperty 'test.resources.dir', "src/test/resources"
 }
 
+publishing {
+  publications {
+    core(MavenPublication) {
+      from components.shadow
+      groupId 'com.lucidworks.hadoop'
+      version "${bigDataVersion}"
+      artifactId = "solr-${project.name}"
+    }
+  }
+}

@@ -1,8 +1,3 @@
-apply plugin: "java"
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'project-report'
-apply plugin: 'jacoco'
-
 shadowJar {
   zip64 true
   mergeServiceFiles()
