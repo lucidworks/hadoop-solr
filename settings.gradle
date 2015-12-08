@@ -1,0 +1,6 @@
+include 'solr-hadoop-core'
+include 'solr-hadoop-job'
+
+include 'solr-hadoop-common:solr-hadoop-io'
+include 'solr-hadoop-common:solr-hadoop-testbase'
+include 'solr-hadoop-common:solr-hadoop-document'

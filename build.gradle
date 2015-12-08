@@ -1,0 +1,158 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+  }
+}
+
+plugins {
+  id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
+
+
+ext {
+  publishedProjects = subprojects - project(':solr-hadoop-common')
+}
+
+subprojects {
+
+  if (project in publishedProjects) {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'project-report'
+    apply plugin: 'jacoco'
+
+    repositories {
+      mavenLocal()
+      jcenter()
+      mavenCentral()
+    }
+
+    gradle.projectsEvaluated {
+      tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+      }
+    }
+
+    jacocoTestReport {
+      reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+      }
+    }
+
+    publishing {
+      publications {
+        core(MavenPublication) {
+          from components.java
+        }
+      }
+    }
+
+    task dist(dependsOn: "publishToMavenLocal") {
+    }
+  }
+}
+
+project('solr-hadoop-core') {
+
+  dependencies {
+    compile(project(':solr-hadoop-common:solr-hadoop-io')) {
+      transitive = false
+    }
+    compile("org.apache.solr:solr-commons-csv:3.5.0")
+    compile("org.apache.mahout:mahout-core:${mahoutVersion}") {
+      transitive = false
+    }
+    // TODO:check deps
+    compile("org.apache.mahout:mahout-math:${mahoutVersion}") {
+      transitive = false
+    }
+    compile("org.apache.mahout:mahout-integration:${mahoutVersion}") {
+      transitive = false
+    }
+    compile("org.apache.mahout.commons:commons-cli:2.0-mahout") {
+      transitive = false
+    }
+
+    compile("org.apache.solr:solr-solrj:${solrVersion}") {
+      exclude group: 'org.apache.hadoop'
+    }
+    compile("org.apache.hadoop:hadoop-common:${hadoop2Version}@jar")
+    compile("org.apache.hadoop:hadoop-client:${hadoop2Version}") {
+      exclude group: 'log4j'
+      exclude group: 'org.slf4j'
+    }
+    compile("org.apache.hadoop:hadoop-auth:${hadoop2Version}") {
+      transitive = false
+    }
+    compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoop2Version}") {
+      transitive = false
+    }
+    compile("org.apache.hadoop:hadoop-hdfs:${hadoop2Version}@jar") {
+      transitive = false
+    }
+
+    compile files('libs/jruby-complete-1.7.11.jar')
+    compile files('libs/logStash-grok.jar')
+
+    testCompile 'com.carrotsearch.randomizedtesting:junit4-ant:1.4.0'
+    testCompile "org.apache.lucene:lucene-analyzers-common:${solrVersion}"
+    testCompile 'commons-collections:commons-collections:3.2.1'
+
+    testCompile "org.apache.solr:solr-test-framework:${solrVersion}"
+    testCompile 'org.apache.mrunit:mrunit:1.0.0:hadoop2@jar'
+
+    testCompile(project(':solr-hadoop-common:solr-hadoop-testbase'))
+  }
+}
+
+project('solr-hadoop-job') {
+
+  apply plugin: 'com.github.johnrengelman.shadow'
+
+  shadowJar {
+    zip64 true
+    mergeServiceFiles()
+    classifier = ''
+    dependencies {
+      exclude(dependency("org.apache.hadoop:.*"))
+    }
+    relocate 'org.apache.http', 'shaded.org.apache.http'
+    relocate 'org.apache.solr', 'shaded.org.apache.solr'
+
+    // Remove unwanted files in root jar (repackaging)
+    exclude 'JDOMAbout*.class'
+    exclude '.gitkeep'
+    exclude '*.txt'
+    exclude '*.dtd'
+    exclude '*.gif'
+    exclude '*.properties'
+    exclude '*.xml'
+    exclude '*.ico'
+    exclude '*.lst'
+    exclude '*.css'
+    exclude 'NOTICE'
+    exclude 'JHIGHLIGHT_VERSION'
+    exclude 'LICENSE'
+  }
+  dependencies {
+    compile(project(':solr-hadoop-core'))
+
+    compile(project(':solr-hadoop-common:solr-hadoop-document')) {
+      transitive = false
+    }
+
+  }
+
+  publishing {
+    publications {
+      shadow(MavenPublication) {
+        from components.shadow
+      }
+    }
+  }
+}

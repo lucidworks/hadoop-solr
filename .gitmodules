@@ -1,0 +1,3 @@
+[submodule "solr-hadoop-common"]
+	path = solr-hadoop-common
+  url = git@github.com:LucidWorks/solr-hadoop-common.git
