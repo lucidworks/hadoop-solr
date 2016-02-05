@@ -64,7 +64,7 @@ public class IngestJob extends AbstractJob {
     addOption(COLLECTION_OPTION, "c", "Collection name", true);
     addOption(MIME_TYPE_OPTION, "mt", "a mimeType known to Tika", false);
     addOption(CONF_OPTION, "con",
-        "Key=value pairs, separated by ; to be added to the Conf.  The value is set as a string.",
+        "Key[value] pairs, separated by ; to be added to the Conf.  The value is set as a string.",
         false);
     addOption(MAPPER_OPTION, "cls",
         "Fully qualified class name for the IngestMapper to use (derived from AbstractIngestMapper)",
