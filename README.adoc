@@ -59,7 +59,7 @@ The Hadoop job jar works in three stages designed to take in raw content and out
 
 NOTE: Incremental indexing, where only changes to a document or directory are processed on successive job jar runs, is not supported. All three steps will be completed each time the job jar is run, regardless of whether the raw content hasn't changed.
 
-The first step of the process converts the input content into a SequenceFile. In order to do this, the entire contents of that file must be read into memory so that it can be written out as a PipelineDocument in the SequenceFile. Thus, you should be careful to ensure that the system does not load into memory a file that is larger than the Java heap size of the process.
+The first step of the process converts the input content into a SequenceFile. In order to do this, the entire contents of that file must be read into memory so that it can be written out as a LWDocument in the SequenceFile. Thus, you should be careful to ensure that the system does not load into memory a file that is larger than the Java heap size of the process.
 
 // tag::ingest-mappers[]
 == Ingest Mappers
@@ -187,11 +187,6 @@ _Default_: false.  _Required_: No.
 If true, the exploration of a folder will be recursive, meaning it will look for subdirectories to traverse for documents.
 +
 _Default_: false. _Required_: No.
-
-`-Dpipeline.uri`:::
-The path to a pipeline configuration file, which can be in the local filesystem (`\file:///path/pipeline.conf`) or in HDFS (`hdfs://path/pipeline.conf`). See the section <<Index-Pipelines-Overview.adoc#using-pipeline,Index Pipelines>> for more information about pipelines.
-+
-_Default_: empty. _Required_: No.
 
 [#csv]
 CSV Ingest Mapper Arguments::
