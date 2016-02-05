@@ -1,23 +1,8 @@
 package com.lucidworks.hadoop.ingest;
 
-import com.lucidworks.hadoop.ingest.util.ZipFileRecordReader;
 import com.lucidworks.hadoop.io.LWDocument;
 import com.lucidworks.hadoop.io.LWDocumentWritable;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import com.lucidworks.hadoop.utils.ZipFileRecordReader;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -33,6 +18,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 public class ZipIngestMapperTest extends BaseIngestMapperTestCase {
   private transient static Logger log = LoggerFactory.getLogger(ZipIngestMapperTest.class);
@@ -81,7 +82,7 @@ public class ZipIngestMapperTest extends BaseIngestMapperTestCase {
 
     zipOut.closeEntry();
     // put in a PDF
-    URL resource = ZipIngestMapperTest.class.getClassLoader().getResource("dir" + File.separator +"test0.pdf");
+    URL resource = ZipIngestMapperTest.class.getClassLoader().getResource("dir" + File.separator + "test0.pdf");
     Assert.assertNotNull(resource);
     ZipEntry e3 = new ZipEntry("/tmp/20020901/test0.pdf");
     zipOut.putNextEntry(e3);

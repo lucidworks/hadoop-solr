@@ -7,12 +7,15 @@ import com.lucidworks.hadoop.utils.SolrCloudClusterSupport;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -26,6 +29,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class IngestJobInit extends SolrCloudClusterSupport {
+
+  static final Logger log = Logger.getLogger(IngestJobInit.class);
 
   protected static Path tempDir;
   protected static Configuration conf;
@@ -123,6 +128,14 @@ public class IngestJobInit extends SolrCloudClusterSupport {
     // TODO check fields
     for (String field : id1Fields) {
       //assertNotNull("No field " + field, doc1.getLWDocument().getFields(field));
+    }
+
+
+    for (Map.Entry<String, LWDocumentWritable> entry : writer.map.entrySet())
+    {
+      if (log.isDebugEnabled()) {
+        log.debug(entry.getKey() + "/" + entry.getValue());
+      }
     }
 
     // Check ids array

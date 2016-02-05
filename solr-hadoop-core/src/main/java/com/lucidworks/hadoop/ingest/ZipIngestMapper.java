@@ -1,15 +1,16 @@
 package com.lucidworks.hadoop.ingest;
 
-import com.lucidworks.hadoop.ingest.util.ZipFileInputFormat;
 import com.lucidworks.hadoop.io.LWDocument;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.lucidworks.hadoop.io.ZipFileInputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Reporter;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.lucidworks.hadoop.utils.ConfigurationKeys.MIME_TYPE;
 
@@ -36,7 +37,7 @@ public class ZipIngestMapper extends AbstractIngestMapper<Text, BytesWritable> {
 
   @Override
   public LWDocument[] toDocuments(Text key, BytesWritable value, Reporter reporter,
-      Configuration conf) throws IOException {
+                                  Configuration conf) throws IOException {
     Map<String, String> metadata = new HashMap<String, String>();
     String mimeType = conf.get(MIME_TYPE, null);
     if (mimeType != null) {

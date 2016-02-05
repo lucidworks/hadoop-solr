@@ -6,6 +6,8 @@ import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
 import com.lucidworks.hadoop.utils.TestUtils;
 import java.io.File;
+import java.util.Arrays;
+
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.util.ToolRunner;
@@ -60,7 +62,6 @@ public class IngestJobTest extends IngestJobInit {
         .createHadoopJobArgsWithConf(jobName, CSVIngestMapper.class.getName(), DEFAULT_COLLECTION,
             getBaseUrl(), input.toUri().toString(),
             "csvFieldMapping[0=bar, 1=id, 2=junk , 3 = zen ,4 = hockey];idField[junk]");
-
     ToolRunner.run(conf, new IngestJob(), args);
     verifyJob(jobName, 2, new String[] { "jumped", "kicked" }, "hockey", "field_5");
   }
@@ -146,7 +147,7 @@ public class IngestJobTest extends IngestJobInit {
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
-    verifyJob(jobName, 776, new String[] { "solr_521", "solr_137", "solr_519" }, "body",
+    verifyJob(jobName, 776, new String[] { "solr_5210", "solr_1370", "solr_5190" }, "body",
         "data_source");
   }
 

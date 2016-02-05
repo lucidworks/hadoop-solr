@@ -1,6 +1,6 @@
 package com.lucidworks.hadoop.ingest;
 
-import com.lucidworks.hadoop.ingest.util.CompressionHelper;
+import com.lucidworks.hadoop.utils.CompressionHelper;
 import com.lucidworks.hadoop.io.LWDocument;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
