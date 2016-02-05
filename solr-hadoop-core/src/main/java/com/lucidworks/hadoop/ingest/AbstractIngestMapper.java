@@ -43,7 +43,9 @@ public abstract class AbstractIngestMapper<K extends Writable, V extends Writabl
     if (documents != null && documents.length > 0) {
       // TODO: can we batch put these into the OutputFormat? can we still deal w/ the errors properly
       for (LWDocument doc : documents) {
-        log.debug("AIM doc: " + doc.toString());
+        if (log.isDebugEnabled()) {
+          log.debug("AIM doc: " + doc.toString());
+        }
         try {
           output.collect(new Text(doc.getId()), new LWDocumentWritable(doc));
           reporter.getCounter(Counters.DOCS_ADDED).increment(1);

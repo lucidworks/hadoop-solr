@@ -18,8 +18,10 @@ import org.jruby.Ruby;
 import org.jruby.RubyArray;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class GrokIngestMapperTest extends BaseIngestMapperTestCase {
 
   private MapDriver<LongWritable, Text, Text, LWDocumentWritable> mapDriver;
