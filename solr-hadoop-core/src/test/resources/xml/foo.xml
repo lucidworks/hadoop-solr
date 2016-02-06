@@ -1,0 +1,12 @@
+<root attr='yo'>
+  <dok id='1'>
+    <text>this is a test</text>
+    <child1 foo='bar'/>
+    <int>5150</int>
+  </dok>
+  <dok id='2'>
+    <text>this is another test</text>
+    <child1 foo='baz'/>
+    <int>5151</int>
+  </dok>
+</root>

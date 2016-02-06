@@ -19,6 +19,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,16 +44,18 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
 
   private transient static Logger log = LoggerFactory.getLogger(XMLIngestMapper.class);
 
+  public static final String LWW_XSLT = "lww.xslt";
+
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
       super.init(conf);
-      String xslt = System.getProperty("lww.xslt");
+      String xslt = conf.get(LWW_XSLT);
       if (xslt != null) {
-        DistributedCacheHandler.addFileToCache(conf, new Path(xslt), "lww.xslt");
+        DistributedCacheHandler.addFileToCache(conf, new Path(xslt), LWW_XSLT);
       }
       boolean override = conf.getBoolean(IngestJob.INPUT_FORMAT_OVERRIDE, false);
-      if (override == false) {
+      if (!override) {
         conf.setInputFormat(XMLInputFormat.class);
       } // else the user has overridden the input format and we assume it is OK.
     }
@@ -78,7 +81,7 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
     }
 
     // XSLt enabled?
-    String xslt = DistributedCacheHandler.getFileFromCache(conf, "lww.xslt");
+    String xslt = DistributedCacheHandler.getFileFromCache(conf, LWW_XSLT);
     if (xslt != null) {
       xslt = xslt.trim();
       if (!xslt.isEmpty()) {
@@ -113,7 +116,6 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
 
   @Override
   protected LWDocument[] toDocuments(Writable key, Text text, Reporter reporter, Configuration configuration) throws IOException {
-
     LWDocument[] docs = null;
     try {
       docs = toDocumentsImpl(key, text);
@@ -122,17 +124,29 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
       reporter.incrCounter("XMLIngestMapper", "BadDocs", 1);
     }
 
-    if (docs != null) {
+    if (docs != null && docs.length > 0) {
       reporter.incrCounter("XMLIngestMapper", "DocsCreated", docs.length);
     } else {
+      log.warn("No documents added in: " + key);
       docs = new LWDocument[0];
     }
-
     return docs;
   }
 
-  protected LWDocument[] toDocumentsImpl(Writable key, Text text) throws Exception {
-    Document doc = docBuilder.parse(new InputSource(new StringReader(text.toString())));
+  protected LWDocument[] toDocumentsImpl(Writable key, Text text) throws Exception{
+
+    String dataText = text.toString();
+    InputSource input = new InputSource(new StringReader(dataText));
+
+    Document doc;
+    try {
+      doc = docBuilder.parse(input);
+    } catch (SAXException e) {
+      dataText = "<" + dataText + ">";
+      log.warn("Trying to process [" + key + "] again.");
+      input = new InputSource(new StringReader(dataText));
+      doc = docBuilder.parse(input);
+    }
 
     Node docNode = doc;
     if (xsltTransformer != null) {
@@ -141,13 +155,14 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
       xsltTransformer.transform(in, out);
       docNode = out.getNode();
       xsltTransformer.reset();
-
       log.info("transformed doc into: " + docNode);
     }
 
     NodeList nodeList = (NodeList) docXPathExpr.evaluate(docNode, XPathConstants.NODESET);
+
     int numDocs = nodeList.getLength();
     log.info("Found " + numDocs + " docs using XPath: " + docXPath);
+
     List<LWDocument> docs = new LinkedList<>();
     String keyStr = key.toString();
     for (int i = 0; i < numDocs; i++) {
@@ -163,7 +178,7 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
     return docs.toArray(new LWDocument[0]);
   }
 
-  protected LWDocument processElement(String keyStr, Element elm, int docIndex) throws Exception {
+  protected LWDocument processElement(String keyStr, Element elm, int docIndex) {
 
     String docId = null;
     if (idXPathExpr != null) {
@@ -186,13 +201,11 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
       Node parentNode = elm.getParentNode();
       if (parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
         Element parent = (Element) parentNode;
-        if (parent != null) {
-          NamedNodeMap attrs = parent.getAttributes();
-          if (attrs != null) {
-            for (int a = 0; a < attrs.getLength(); a++) {
-              Attr attr = (Attr) attrs.item(a);
-              pDoc.addField(includeParentAttrsPrefix + attr.getName(), attr.getValue());
-            }
+        NamedNodeMap attrs = parent.getAttributes();
+        if (attrs != null) {
+          for (int a = 0; a < attrs.getLength(); a++) {
+            Attr attr = (Attr) attrs.item(a);
+            pDoc.addField(includeParentAttrsPrefix + attr.getName(), attr.getValue());
           }
         }
       }

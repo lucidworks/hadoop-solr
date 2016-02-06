@@ -5,15 +5,14 @@ import com.google.common.io.Files;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
 import com.lucidworks.hadoop.utils.TestUtils;
-import java.io.File;
-import java.util.Arrays;
-
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.util.ToolRunner;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -45,7 +44,7 @@ public class IngestJobTest extends IngestJobInit {
     // conflicts
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
-    verifyJob(jobName, 2, new String[] { "id-1", "id-2" }, "hockey", "field_5");
+    verifyJob(jobName, 2, new String[]{"id-1", "id-2"}, "hockey", "field_5");
 
     jobName = "testCsv2";
     args = TestUtils
@@ -54,7 +53,7 @@ public class IngestJobTest extends IngestJobInit {
             "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]");
 
     ToolRunner.run(conf, new IngestJob(), args);
-    verifyJob(jobName, 2, new String[] { "id-1", "id-2" }, "hockey", "field_5");
+    verifyJob(jobName, 2, new String[]{"id-1", "id-2"}, "hockey", "field_5");
 
     jobName = "testCsvFieldId";
     // id Field is the the field called "junk"
@@ -63,7 +62,7 @@ public class IngestJobTest extends IngestJobInit {
             getBaseUrl(), input.toUri().toString(),
             "csvFieldMapping[0=bar, 1=id, 2=junk , 3 = zen ,4 = hockey];idField[junk]");
     ToolRunner.run(conf, new IngestJob(), args);
-    verifyJob(jobName, 2, new String[] { "jumped", "kicked" }, "hockey", "field_5");
+    verifyJob(jobName, 2, new String[]{"jumped", "kicked"}, "hockey", "field_5");
   }
 
   @Test
@@ -108,8 +107,8 @@ public class IngestJobTest extends IngestJobInit {
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     verifyJob(jobName, 6,
-        new String[] { "test0.pdf", "test1.doc", "test0.doc", "test3.pdf", "test2.pdf",
-            "test1.pdf" }, "body", "Content-Type");
+        new String[]{"test0.pdf", "test1.doc", "test0.doc", "test3.pdf", "test2.pdf",
+            "test1.pdf"}, "body", "Content-Type");
   }
 
   @Test
@@ -127,8 +126,8 @@ public class IngestJobTest extends IngestJobInit {
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
-    verifyJob(jobName, 4, new String[] { "<urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>",
-            "<urn:uuid:6ee9accb-a284-47ef-8785-ed28aee2f79e>" }, "warc.WARC-Target-URI",
+    verifyJob(jobName, 4, new String[]{"<urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>",
+            "<urn:uuid:6ee9accb-a284-47ef-8785-ed28aee2f79e>"}, "warc.WARC-Target-URI",
         "warc.WARC-Warcinfo-ID");
   }
 
@@ -147,7 +146,7 @@ public class IngestJobTest extends IngestJobInit {
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
-    verifyJob(jobName, 776, new String[] { "solr_5210", "solr_1370", "solr_5190" }, "body",
+    verifyJob(jobName, 776, new String[]{"solr_5210", "solr_1370", "solr_5190"}, "body",
         "data_source");
   }
 
@@ -167,7 +166,7 @@ public class IngestJobTest extends IngestJobInit {
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     verifyJob(jobName, 776,
-        new String[] { "frank_seq_558", "frank_seq_171", "frank_seq_554", "frank_seq_551" },
+        new String[]{"frank_seq_558", "frank_seq_171", "frank_seq_554", "frank_seq_551"},
         "data_source", "_raw_content_");
   }
 
@@ -247,7 +246,7 @@ public class IngestJobTest extends IngestJobInit {
     conf.set("io.serializations", "com.lucidworks.hadoop.io.impl.LWMockSerealization");
     conf.set("io.sort.mb", "1");
     ToolRunner.run(conf, new IngestJob(), args);
-    verifyJob(jobName, 2, new String[] { "id-1", "id-2" }, "hockey", "field_5");
+    verifyJob(jobName, 2, new String[]{"id-1", "id-2"}, "hockey", "field_5");
   }
 
   @Test
@@ -357,6 +356,35 @@ public class IngestJobTest extends IngestJobInit {
     } catch (Exception e) {
       assertTrue(e.getMessage().startsWith("Can't parse"));
     }
+  }
+
+  @Test
+  public void testXML() throws Exception {
+    String xsl = "xml" + File.separator + "xml_ingest_mapper.xsl";
+    File xslFile = new File(ClassLoader.getSystemClassLoader().getResource(xsl).getPath());
+    assertTrue(xsl + " does not exist: " + xslFile.getAbsolutePath(), xslFile.exists());
+    Path inputXsl = new Path(tempDir, xsl);
+    addContentToFS(inputXsl, Files.toByteArray(xslFile));
+
+    String xml = "xml" + File.separator + "foo.xml";
+    File xmlFile = new File(ClassLoader.getSystemClassLoader().getResource(xml).getPath());
+    assertTrue(xml + " does not exist: " + xmlFile.getAbsolutePath(), xmlFile.exists());
+    Path input = new Path(tempDir, xml);
+    addContentToFS(input, Files.toByteArray(xmlFile));
+
+    String jobName = "testXml";
+    String[] args = TestUtils
+        .createHadoopJobArgsWithConf(jobName, XMLIngestMapper.class.getName(), DEFAULT_COLLECTION,
+            getBaseUrl(), input.toUri().toString(), "lww.xslt[" + inputXsl + "];lww.xml.start[root];" +
+                "lww.xml.end[root];lww.xml.docXPathExpr[//doc];lww.xml.includeParentAttrsPrefix[p_]");
+
+    // TODO: ToolRunner has some problems with exiting, so this may cause
+    // conflicts
+    int val = ToolRunner.run(conf, new IngestJob(), args);
+    assertEquals(0, val);
+    verifyJob(jobName, 2, new String[]{"1", "2"}, "text", "int");
+
+
   }
 
 }

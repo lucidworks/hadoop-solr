@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Abstract Mapper that transforms <K,V> provided by an FileInputFormat into SDA
- * Documents. The documents returned by this mapper are sent to HBase.
+ * Abstract Mapper that transforms <K,V> provided by an FileInputFormat into
+ * Documents. The documents returned by this mapper.
  * <p/>
  * Needs to define how records are transformed (see toDocuments) and how this
  * Mapper is configured (see getFixture)
@@ -30,10 +30,12 @@ public abstract class AbstractIngestMapper<K extends Writable, V extends Writabl
     super.configure(conf);
   }
 
+  @Override
   public final void map(K key, V value, OutputCollector<Text, LWDocumentWritable> output,
                         Reporter reporter) throws IOException {
     // TODO: potential OOM here if we create a lot of docs from 1.
     LWDocument[] documents = null;
+
     try {
       documents = toDocuments(key, value, reporter, conf);
     } catch (OutOfMemoryError e) {
