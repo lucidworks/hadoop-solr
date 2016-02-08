@@ -44,6 +44,9 @@ public class XMLIngestMapperTest extends BaseIngestMapperTestCase {
     conf.set("lww.xml.docXPathExpr", "//doc");
     conf.set("lww.xml.includeParentAttrsPrefix", "p_");
 
+    conf.set("lww.xml.start", "");
+    conf.set("lww.xml.end", "");
+
     // apply an XSLt to the source document as part of the mapper task
     String xmlXsl = "xml/xml_ingest_mapper.xsl";
     String xsltInDCache = XMLIngestMapperTest.class.getClassLoader().getResource(xmlXsl).getPath();
