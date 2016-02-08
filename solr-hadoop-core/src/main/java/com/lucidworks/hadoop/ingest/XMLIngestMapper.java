@@ -57,6 +57,9 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
       boolean override = conf.getBoolean(IngestJob.INPUT_FORMAT_OVERRIDE, false);
       if (!override) {
         conf.setInputFormat(XMLInputFormat.class);
+        if (conf.get(XMLInputFormat.START_TAG_KEY) == null || conf.get(XMLInputFormat.END_TAG_KEY) == null) {
+          throw new RuntimeException("Missing XMLInputFormat Tags " + XMLInputFormat.START_TAG_KEY + " and/or " + XMLInputFormat.END_TAG_KEY);
+        }
       } // else the user has overridden the input format and we assume it is OK.
     }
   };
@@ -133,7 +136,7 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
     return docs;
   }
 
-  protected LWDocument[] toDocumentsImpl(Writable key, Text text) throws Exception{
+  protected LWDocument[] toDocumentsImpl(Writable key, Text text) throws Exception {
 
     String dataText = text.toString();
     InputSource input = new InputSource(new StringReader(dataText));

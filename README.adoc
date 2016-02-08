@@ -134,6 +134,13 @@ Only "add" commands in the SolrXML will be processed. All other commands will be
 
 _Supports_: SequenceFileInputFormat documents.
 
+=== XML Ingest Mapper
+This ingest mapper allows you to index a file inXML format. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.XMLIngestMapper`.
+
+This mapper requires that the `docXPathExpr` parameter be set when creating the workflow job. For more details, see the section <<xml,XML Ingest Mapper Arguments>>.
+
+_Supports_: XMLInputFormat documents.
+
 === WARC Ingest Mapper
 This ingest mapper allows you to index web archive (`.warc`) files in WarcFileInputFormat. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.WarcIngestMapper`.
 
@@ -262,6 +269,41 @@ The field in the XML document to be used as a unique document ID in the index.
 This argument is required when using the SolrXML Ingest Mapper, but not required when using the CSV Ingest Mapper.
 +
 _Default_: `none`. _Required_: Yes.
+
+[#xml]
+Xml Ingest Mapper Arguments::
+These arguments are used only when the XMLIngestMapper is chosen with the `-cls` property described in the section, <<Key-Value Pair Arguments>>, below.
+
+`-Dlww.xslt`:::
+The path in hdfs to a xslt configuration file.
++
+_Default_: `none`. _Required_: No.
+
+`-Dlww.xml.docXPathExpr`:::
+XMl XPath expressions for the document document.
++
+_Default_: `\`. _Required_: Yes.
+
+`-Dlww.xml.idXPathExpr`:::
+XMl XPath expressions for the document id.
++
+_Default_: `none`. _Required_: No.
+
+`-Dww.xml.includeParentAttrsPrefix`:::
+Pull parent node attributes by adding a prefix, if desired.
++
+_Default_: `none`. _Required_: No.
+
+`-Dlww.xml.start`:::
+The start key tag from the xml.
++
+_Default_: `none`. _Required_: Yes.
+
+`-Dlww.xml.end`:::
+The end key tag from the xml.
++
+_Default_: `none`. _Required_: Yes.
+
 
 Other arguments not described here (such as Hadoop-specific system arguments) can be supplied as needed and they will be added to the Hadoop configuration. These arguments should be defined with the `-Dargument=value` syntax.
 // end::mapper-args[]
