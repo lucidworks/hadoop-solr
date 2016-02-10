@@ -18,9 +18,11 @@ public abstract class BaseHadoopIngest {
 
   private static final String UNKNOWN = "__unknown__";
   protected Configuration conf;
+  protected String jobName;
 
   public void configure(JobConf conf) {
     this.conf = conf;
+    this.jobName = conf.getJobName();
     System.setProperty("java.awt.headless", "true");
     try {
       LWDocumentProvider.configure(conf);

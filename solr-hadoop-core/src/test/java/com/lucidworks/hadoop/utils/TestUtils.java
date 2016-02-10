@@ -13,9 +13,8 @@ public class TestUtils {
   private static String CONF_OPTION = "conf";
 
   // mandatory job args
-  public static String HADOOP_ARGS =
-      "" + "-jn %s " + "-cls %s " + "-c %s " + "-of " + IngestJobMockMapRedOutFormat.class.getName()
-          + " -i %s";
+  public static String HADOOP_ARGS = "-jn %s -cls %s -c %s -i %s";
+
 
   public static String[] createHadoopJobArgsWithConf(String jn, String cls, String c, String s, String i, String conf) {
     String csvArgs = "";
@@ -23,6 +22,15 @@ public class TestUtils {
       csvArgs = csvArgs + "--" + CONF_OPTION + "&s" + conf;
     }
     return ObjectArrays.concat(createHadoopJobArgs(jn, cls, c, s, i),
+        csvArgs.split("&s"), String.class);
+  }
+
+  public static String[] createHadoopJobArgsWithConf(String jn, String cls, String c, String s, String i, String conf, String of) {
+    String csvArgs = "";
+    if (conf != null) {
+      csvArgs = csvArgs + "--" + CONF_OPTION + "&s" + conf;
+    }
+    return ObjectArrays.concat(createHadoopJobArgs(jn, cls, c, s, i, of),
         csvArgs.split("&s"), String.class);
   }
 
@@ -54,7 +62,7 @@ public class TestUtils {
    * @param isZk when true zookepper (Solr cloud)
    * @return
    */
-  public static String[] createHadoopJobArgs(String jn, String cls, String c, String s, String i,
+  public static String[] createHadoopJobArgs(String jn, String cls, String c, String s, String i, String of,
       boolean isZk) {
     String args = HADOOP_ARGS;
     if (s != null) {
@@ -64,13 +72,23 @@ public class TestUtils {
         args = args + " -s " + s;
       }
     }
+    if (of == null) {
+      args = args + " -of " + IngestJobMockMapRedOutFormat.class.getName();
+    } else {
+      args = args + " -of " + of;
+    }
     // change the split: spaces could generate a problem
     return String.format(args, jn, cls, c, i).split(" ");
   }
 
   public static String[] createHadoopJobArgs(String jn, String cls, String c, String s, String i) {
-    return createHadoopJobArgs(jn, cls, c, s, i, true);
+    return createHadoopJobArgs(jn, cls, c, s, i, null, true);
   }
+
+  public static String[] createHadoopJobArgs(String jn, String cls, String c, String s, String i, String of) {
+    return createHadoopJobArgs(jn, cls, c, s, i, of, true);
+  }
+
 
   public static LWDocumentWritable createLWDocumentWritable(String id, String... keyValues) {
     Map<String, String> fields = new HashMap<>();

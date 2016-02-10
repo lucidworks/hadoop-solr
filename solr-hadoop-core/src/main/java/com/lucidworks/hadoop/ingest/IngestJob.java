@@ -96,19 +96,6 @@ public class IngestJob extends AbstractJob {
     String zk = getOption(ZK_CONNECT_OPTION);
     String solr = getOption(SOLR_SERVER_OPTION);
 
-    //TODO: If the user specifies a OUTPUT_FORMAT that is not LW, then, in theory, we don't have to have one or the other of ZK or Solr as perhaps they are just writing to disk
-    if (zk != null && zk.isEmpty() == false) {
-      conf.set(ZK_CONNECT, zk);
-      conf.set(LucidWorksWriter.SOLR_ZKHOST, zk);
-    } else if (solr != null && solr.isEmpty() == false) {
-      conf.set(SOLR_SERVER_URL, solr);
-      conf.set(LucidWorksWriter.SOLR_SERVER_URL, solr);
-    } else {
-      System.out.println(
-          "You must specify either the " + ZK_CONNECT_OPTION + " or the " + SOLR_SERVER_OPTION);
-      return 1;
-    }
-
     // Pass through CLI args to JobConf
     conf.set(COLLECTION, getOption(COLLECTION_OPTION));
     conf.set(LucidWorksWriter.SOLR_COLLECTION,
@@ -120,7 +107,7 @@ public class IngestJob extends AbstractJob {
 
     //Handle additional conf parameters
     String confAdds = getOption(CONF_OPTION);
-    if (confAdds != null && confAdds.isEmpty() == false) {
+    if (confAdds != null && !confAdds.isEmpty()) {
       processConf(confAdds, conf);
     }
 
@@ -185,17 +172,31 @@ public class IngestJob extends AbstractJob {
     }
 
     String outputFormatName = getOption(OUTPUT_FORMAT);
-    if (outputFormatName != null) {
-      //if the user passed in an OutputFormat, than override what the mapper set.
-      log.info("OutputFormat is {}", outputFormatName);
-      Class<? extends OutputFormat> ofClass = Class.forName(outputFormatName)
-          .asSubclass(OutputFormat.class);
-      conf.setOutputFormat(ofClass);
-      conf.setBoolean(OUTPUT_FORMAT_OVERRIDE, true);
-
-    } else {
+    if (outputFormatName == null || outputFormatName.equals(LWMapRedOutputFormat.class.getName())) {
       log.info("Using default OutputFormat: {}", LWMapRedOutputFormat.class.getName());
       conf.setOutputFormat(LWMapRedOutputFormat.class);
+      if (zk != null && !zk.isEmpty()) {
+        conf.set(ZK_CONNECT, zk);
+        conf.set(LucidWorksWriter.SOLR_ZKHOST, zk);
+      } else if (solr != null && !solr.isEmpty()) {
+        conf.set(SOLR_SERVER_URL, solr);
+        conf.set(LucidWorksWriter.SOLR_SERVER_URL, solr);
+      } else {
+        System.out.println("You must specify either the " + ZK_CONNECT_OPTION + " or the " + SOLR_SERVER_OPTION);
+        return 1;
+      }
+      // Checking Solr server before job execution
+      if (!checkSolrServer(conf)) {
+        System.out.println("Solr server not available on: " + (zk == null || zk.isEmpty() ? solr : zk));
+        System.out.println("Make sure that collection [" + getOption(COLLECTION_OPTION) + "] exists");
+        return 1;
+      }
+    } else {
+      //if the user passed in an OutputFormat, than override what the mapper set.
+      log.info("OutputFormat is {}", outputFormatName);
+      Class<? extends OutputFormat> ofClass = Class.forName(outputFormatName).asSubclass(OutputFormat.class);
+      conf.setOutputFormat(ofClass);
+      conf.setBoolean(OUTPUT_FORMAT_OVERRIDE, true);
     }
 
     //Configure the mappers and reducers after we have done everything else in case they want to override anything
@@ -204,17 +205,9 @@ public class IngestJob extends AbstractJob {
       reducer.getFixture().init(conf);
     }
 
-    // Checking Solr server before job execution(LWSHADOOP-74)
-    if (!checkSolrServer(conf)) {
-      System.out
-          .println("Solr server not available on: " + (zk == null || zk.isEmpty() ? solr : zk));
-      System.out.println("Make sure that collection [" + getOption(COLLECTION_OPTION) + "] exists");
-      return 1;
-    }
-
     boolean debugAll = conf.getBoolean("lww.debug.all", false);
     if (debugAll) {
-      conf.set("yarn.app.mapreduce.am.log.level", "ALL");
+      conf.set("yarn.app.mapreduce.am.log.level", "DEBUG");
     }
 
     // Run the job and wait

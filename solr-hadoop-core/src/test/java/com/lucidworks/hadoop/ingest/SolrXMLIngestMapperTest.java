@@ -2,14 +2,6 @@ package com.lucidworks.hadoop.ingest;
 
 import com.lucidworks.hadoop.io.LWDocument;
 import com.lucidworks.hadoop.io.LWDocumentWritable;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.xml.stream.XMLStreamException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -21,6 +13,15 @@ import org.apache.mahout.common.Pair;
 import org.apache.mahout.common.iterator.sequencefile.SequenceFileIterator;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
@@ -74,8 +75,7 @@ public class SolrXMLIngestMapperTest extends BaseIngestMapperTestCase {
     Path dst = new Path(tempDir, "frankenstein_text_solr.seq");
     fs.copyFromLocalFile(path, dst);
 
-    SequenceFileIterator<Text, Text> iterator = new SequenceFileIterator<Text, Text>(dst, true,
-        conf);
+    SequenceFileIterator<Text, Text> iterator = new SequenceFileIterator<Text, Text>(dst, true, conf);
     int i = 0;
     Set<String> ids = new HashSet<String>();
     while (iterator.hasNext()) {
@@ -90,7 +90,7 @@ public class SolrXMLIngestMapperTest extends BaseIngestMapperTestCase {
     //get one doc just to confirm:
     LWDocument doc = run.get(0).getSecond().getLWDocument();
     assertNotNull("document is null", doc);
-    assertTrue(ids.contains(doc.getId()));
+    assertTrue("ID: " + doc.getId(), ids.contains(doc.getId()));
     assertTrue(i > 0);
   }
 

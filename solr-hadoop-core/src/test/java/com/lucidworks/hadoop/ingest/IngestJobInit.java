@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -80,8 +81,7 @@ public class IngestJobInit extends SolrCloudClusterSupport {
   @After
   public void printOut() throws Exception {
     // prints the outStream after each test
-    System.err
-        .println("Info: Testmethod[" + testName.getMethodName() + "] output[" + outStream + "]");
+    System.err.println("Info: Testmethod[" + testName.getMethodName() + "] output[" + outStream + "]");
   }
 
   public static void clearOutput() {
@@ -119,17 +119,15 @@ public class IngestJobInit extends SolrCloudClusterSupport {
     assertNotNull(writer);
 
     int c = counter - writer.map.size();
-    assertTrue(c <= 1);
+    assertEquals(counter, writer.map.size());
     // Get the first ID
     LWDocumentWritable doc1 = writer.map.get(ids[0]);
 
     // Check related document related to doc1
     Assert.assertNotNull("No doc with " + ids[0], doc1);
-    // TODO check fields
     for (String field : id1Fields) {
-      //assertNotNull("No field " + field, doc1.getLWDocument().getFields(field));
+      assertNotNull("No field " + field, doc1.getLWDocument().getFirstFieldValue(field));
     }
-
 
     for (Map.Entry<String, LWDocumentWritable> entry : writer.map.entrySet())
     {

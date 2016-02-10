@@ -2,6 +2,8 @@ package com.lucidworks.hadoop.ingest;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.lucidworks.hadoop.io.FusionOutputFormat;
+import com.lucidworks.hadoop.io.LWMapRedOutputFormat;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
 import com.lucidworks.hadoop.utils.TestUtils;
@@ -38,10 +40,9 @@ public class IngestJobTest extends IngestJobInit {
     String[] args = TestUtils
         .createHadoopJobArgsWithConf(jobName, CSVIngestMapper.class.getName(), DEFAULT_COLLECTION,
             getBaseUrl(), input.toUri().toString(),
-            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]");
+            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id];csvFirstLineComment[true]");
 
-    // TODO: ToolRunner has some problems with exiting, so this may cause
-    // conflicts
+    // TODO: ToolRunner has some problems with exiting, so this may cause conflicts
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     verifyJob(jobName, 2, new String[]{"id-1", "id-2"}, "hockey", "field_5");
@@ -53,7 +54,7 @@ public class IngestJobTest extends IngestJobInit {
             "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]");
 
     ToolRunner.run(conf, new IngestJob(), args);
-    verifyJob(jobName, 2, new String[]{"id-1", "id-2"}, "hockey", "field_5");
+    verifyJob(jobName, 3, new String[]{"id-1", "id-2"}, "hockey", "field_5");
 
     jobName = "testCsvFieldId";
     // id Field is the the field called "junk"
@@ -62,7 +63,7 @@ public class IngestJobTest extends IngestJobInit {
             getBaseUrl(), input.toUri().toString(),
             "csvFieldMapping[0=bar, 1=id, 2=junk , 3 = zen ,4 = hockey];idField[junk]");
     ToolRunner.run(conf, new IngestJob(), args);
-    verifyJob(jobName, 2, new String[]{"jumped", "kicked"}, "hockey", "field_5");
+    verifyJob(jobName, 3, new String[]{"jumped", "kicked"}, "hockey", "field_5");
   }
 
   @Test
@@ -126,7 +127,7 @@ public class IngestJobTest extends IngestJobInit {
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
-    verifyJob(jobName, 4, new String[]{"<urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>",
+    verifyJob(jobName, 3, new String[]{"<urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>",
             "<urn:uuid:6ee9accb-a284-47ef-8785-ed28aee2f79e>"}, "warc.WARC-Target-URI",
         "warc.WARC-Warcinfo-ID");
   }
@@ -146,8 +147,7 @@ public class IngestJobTest extends IngestJobInit {
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
-    verifyJob(jobName, 776, new String[]{"solr_5210", "solr_1370", "solr_5190"}, "body",
-        "data_source");
+    verifyJob(jobName, 776, new String[]{"solr_521", "solr_137", "solr_519"}, "body");
   }
 
   @Test
@@ -166,8 +166,7 @@ public class IngestJobTest extends IngestJobInit {
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     verifyJob(jobName, 776,
-        new String[]{"frank_seq_558", "frank_seq_171", "frank_seq_554", "frank_seq_551"},
-        "data_source", "_raw_content_");
+        new String[]{"frank_seq_558", "frank_seq_171", "frank_seq_554", "frank_seq_551"});
   }
 
   @Test
@@ -242,7 +241,7 @@ public class IngestJobTest extends IngestJobInit {
             getBaseUrl(), input.toUri().toString(), "--" + IngestJob.REDUCER_OPTION,
             IngestReducer.class.getName(), "--" + IngestJob.NUM_REDUCERS_OPTION, "3",
             "--" + IngestJob.CONF_OPTION,
-            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]");
+            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id];csvFirstLineComment[true]");
     conf.set("io.serializations", "com.lucidworks.hadoop.io.impl.LWMockSerealization");
     conf.set("io.sort.mb", "1");
     ToolRunner.run(conf, new IngestJob(), args);
@@ -284,7 +283,8 @@ public class IngestJobTest extends IngestJobInit {
     args = TestUtils
         .createHadoopJobArgsWithConf(jobName, CSVIngestMapper.class.getName(), DEFAULT_COLLECTION,
             invalidSolrConnection, input.toUri().toString(),
-            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]");
+            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]", LWMapRedOutputFormat.class
+                .getName());
 
     val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -306,7 +306,7 @@ public class IngestJobTest extends IngestJobInit {
     // zk/s -> null
     args = TestUtils
         .createHadoopJobArgs(jobName, CSVIngestMapper.class.getName(), DEFAULT_COLLECTION, null,
-            input.toUri().toString());
+            input.toUri().toString(), LWMapRedOutputFormat.class.getName());
 
     val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -334,7 +334,8 @@ public class IngestJobTest extends IngestJobInit {
     String[] args = TestUtils
         .createHadoopJobArgsWithConf(jobName, CSVIngestMapper.class.getName(), "INVALID-COLLECTION",
             invalidSolrConnection, input.toUri().toString(),
-            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]");
+            "csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]", LWMapRedOutputFormat.class
+                .getName());
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -378,13 +379,8 @@ public class IngestJobTest extends IngestJobInit {
             getBaseUrl(), input.toUri().toString(), "lww.xslt[" + inputXsl + "];lww.xml.start[root];" +
                 "lww.xml.end[root];lww.xml.docXPathExpr[//doc];lww.xml.includeParentAttrsPrefix[p_]");
 
-    // TODO: ToolRunner has some problems with exiting, so this may cause
-    // conflicts
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     verifyJob(jobName, 2, new String[]{"1", "2"}, "text", "int");
-
-
   }
-
 }
