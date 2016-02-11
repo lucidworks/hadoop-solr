@@ -146,6 +146,12 @@ project('solr-hadoop-job') {
       transitive = false
     }
 
+    compile "org.apache.tika:tika-core:${tikaVersion}"
+    compile("org.apache.tika:tika-parsers:${tikaVersion}") {
+      exclude module: "asm-debug-all"
+      exclude module: "quartz"
+    }
+
   }
 
   publishing {
