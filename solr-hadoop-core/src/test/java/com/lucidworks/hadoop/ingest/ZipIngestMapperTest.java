@@ -118,16 +118,12 @@ public class ZipIngestMapperTest extends BaseIngestMapperTestCase {
     mapDriver.withInput(key, value);
     run = mapDriver.run(true);
     Assert.assertEquals(3, run.size());
-    // TODO: something wrong here
     checkDoc(run.get(2).getSecond().getLWDocument(), null);
-
   }
 
   protected void checkDoc(LWDocument doc, String expectedText) {
     Assert.assertNotNull("document is null", doc);
     Assert.assertNotNull(doc.getId());
-    // TODO: Check Fields
-
   }
 
   @Test

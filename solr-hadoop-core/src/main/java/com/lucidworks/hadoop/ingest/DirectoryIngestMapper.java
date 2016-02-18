@@ -38,7 +38,6 @@ public class DirectoryIngestMapper extends AbstractIngestMapper<Text, NullWritab
     public void init(JobConf conf) throws IOException {
       super.init(conf);
       // Expand the input path glob into a sequence file of inputs
-      //readPipelineConfiguration(conf);
       Path actualInput = new Path(conf.get(TEMP_DIR), "inputs.seq");
       expandGlob(conf, actualInput, FileInputFormat.getInputPaths(conf));
 
@@ -100,16 +99,13 @@ public class DirectoryIngestMapper extends AbstractIngestMapper<Text, NullWritab
   @Override
   public LWDocument[] toDocuments(Text uri, NullWritable _, Reporter reporter, Configuration conf)
       throws IOException {
-    // Download the contents at the uri and set as the Document content
-    // TikaProcessor processor = TikaHelper.newInstance(tikaClassName);
-    // processor.setConf(conf);
     Path file;
     try {
       file = new Path(new URI(uri.toString()));
     } catch (URISyntaxException e) {
       throw new IOException(e);
     }
-    log.info("Processing: {} conf: {}", file, conf);
+    log.debug("Processing: {} conf: {}", file, conf);
     FileSystem fs = file.getFileSystem(conf);
     byte[] ba = null;
 

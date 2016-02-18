@@ -1,16 +1,18 @@
 package com.lucidworks.hadoop.ingest;
 
+import com.google.common.io.Files;
 import com.lucidworks.hadoop.io.LWDocument;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
 import com.lucidworks.hadoop.utils.TestUtils;
-import java.io.File;
-import java.net.URL;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
+import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -182,7 +184,6 @@ public class IngestJobCompressionTest extends IngestJobInit {
     IngestJobMockMapRedOutFormat.writers.remove(jobName);
   }
 
-  @Ignore("LWSHADOOP-120")
   @Test
   public void testGzipCompressionWithGrok() throws Exception {
 
@@ -198,13 +199,14 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String grokUri = "grok" + File.separator + "IP-WORD.conf";
-    Path grokUriPath = new Path(input, grokUri);
+    File grokFile = new File(ClassLoader.getSystemClassLoader().getResource(grokUri).getPath());
+    assertTrue(grokFile + " does not exist: " + grokFile.getAbsolutePath(), grokFile.exists());
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
     String[] args = TestUtils
         .createHadoopOptionalArgs(jobName, GrokIngestMapper.class.getName(), DEFAULT_COLLECTION,
             getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName,
-            "-Dgrok.uri=" + grokUriPath);
+            "-Dgrok.uri=" + grokFile);
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -226,7 +228,6 @@ public class IngestJobCompressionTest extends IngestJobInit {
     IngestJobMockMapRedOutFormat.writers.remove(jobName);
   }
 
-  @Ignore("LWSHADOOP-120")
   @Test
   public void testBzip2CompressionWithGrok() throws Exception {
 
@@ -522,27 +523,21 @@ public class IngestJobCompressionTest extends IngestJobInit {
     IngestJobMockMapRedOutFormat.writers.remove(jobName);
   }
 
-  private static final String WARC_FIELD = "warc.";
-
-  @Ignore
   @Test
   public void testGzipCompressionWithWarc() throws Exception {
 
-    Path input = new Path(tempDir, "WarcIngestMapper");
-    fs.mkdirs(input);
-    String compressedFileName = "warc/at.warc.gz";
-    Path currentInput = new Path(input, compressedFileName);
+    String compressedFileName = "warc" + File.separator + "at.warc.gz";
 
-    // Copy compressed file to HDFS
-    URL url = IngestJobCompressionTest.class.getClassLoader().getResource(compressedFileName);
-    assertTrue(url != null);
-    Path localPath = new Path(url.toURI());
-    fs.copyFromLocalFile(localPath, currentInput);
+    File warcFile = new File(ClassLoader.getSystemClassLoader().getResource(compressedFileName).getPath());
+    assertTrue(warcFile + " does not exist: " + warcFile.getAbsolutePath(), warcFile.exists());
+    Path input = new Path(tempDir, compressedFileName);
+    addContentToFS(input, Files.toByteArray(warcFile));
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
     String[] args = TestUtils
         .createHadoopJobArgs(jobName, WarcIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+            getBaseUrl(), input.toUri().toString());
+
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 

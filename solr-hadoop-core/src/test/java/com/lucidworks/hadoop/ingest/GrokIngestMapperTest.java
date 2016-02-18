@@ -18,17 +18,13 @@ import org.jruby.Ruby;
 import org.jruby.RubyArray;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class GrokIngestMapperTest extends BaseIngestMapperTestCase {
 
   private MapDriver<LongWritable, Text, Text, LWDocumentWritable> mapDriver;
   private JobConf jobConf;
   private GrokIngestMapper mapper;
-
-  private static String PATH_S = GrokIngestMapper.PATH_FIELD_NAME + "_s";
 
   @Before
   public void setUp() throws Exception {

@@ -2,6 +2,18 @@ package com.lucidworks.hadoop.ingest;
 
 import com.lucidworks.hadoop.ingest.util.GrokHelper;
 import com.lucidworks.hadoop.io.LWDocumentWritable;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mrunit.MapDriver;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,24 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mrunit.MapDriver;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class GrokHelperTest {
 
   private MapDriver<LongWritable, Text, Text, LWDocumentWritable> mapDriver;
   private JobConf jobConf;
-  private int tempFiles;
   private Path base;
   private FileSystem fs;
 
@@ -94,7 +93,7 @@ public class GrokHelperTest {
 
   @Test
   public void testReadLocal() throws Exception {
-    String configurationFileName = "grok" + File.separator +"IP-WORD.conf";
+    String configurationFileName = "grok" + File.separator + "IP-WORD.conf";
     String path = GrokHelperTest.class.getClassLoader().getResource(configurationFileName)
         .getPath();
 
@@ -221,7 +220,6 @@ public class GrokHelperTest {
     Assert.assertTrue(response);
   }
 
-  @Ignore
   @Test
   public void addPatternsToHDFS() throws Exception {
 

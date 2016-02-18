@@ -2,7 +2,6 @@ package com.lucidworks.hadoop.ingest;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import com.lucidworks.hadoop.io.FusionOutputFormat;
 import com.lucidworks.hadoop.io.LWMapRedOutputFormat;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
@@ -11,7 +10,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.util.ToolRunner;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -198,7 +196,6 @@ public class IngestJobTest extends IngestJobInit {
     assertEquals(2, mockRecordWriter.map.size());
   }
 
-  @Ignore // The distributed cache is not adding the conf file
   @Test
   public void testGrok() throws Exception {
     String grok = "grok" + File.separator + "ip-word.log";
