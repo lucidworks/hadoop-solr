@@ -234,7 +234,7 @@ public class GrokHelperTest {
     params.put(GrokIngestMapper.CONFIG_STRING_RUBY_PARAM, conf);
     Object response = GrokIngestMapper
         .executeScript(GrokIngestMapper.PATTERN_HANDLER_RUBY_CLASS, params,
-            new ArrayList<>());
+            new ArrayList<String>());
 
     // Expected an array of paths
     String expected = "[\"/home/user/patterns/extra1.txt\", \"/home/user/patterns/extra2.txt\"]";
