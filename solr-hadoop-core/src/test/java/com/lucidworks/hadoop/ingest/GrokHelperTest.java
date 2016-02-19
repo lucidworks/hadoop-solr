@@ -12,6 +12,7 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mrunit.MapDriver;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -220,14 +221,16 @@ public class GrokHelperTest {
     Assert.assertTrue(response);
   }
 
+  @Ignore
   @Test
   public void addPatternsToHDFS() throws Exception {
-
-    String configurationFileName = "grok" + File.separator + "confWithAddPatterns.conf";
-    // Create a new file in HDFS
-    URL url = GrokHelperTest.class.getClassLoader().getResource(configurationFileName);
-
-    String conf = GrokHelper.readConfiguration(url.getPath(), new JobConf());
+    String conf = "filter {\n" +
+        "  grok {\n" +
+        "    match => [\"message\", \"%{IP:ip} %{WORD:log_message}\"]\n" +
+        "    add_field => [\"received_from_field\", \"%{ip}\"]\n" +
+        "    patterns_dir => [\"/home/user/patterns/extra1.txt\", \"/home/user/patterns/extra2.txt\"]\n" +
+        "  }\n" +
+        "}";
 
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(GrokIngestMapper.CONFIG_STRING_RUBY_PARAM, conf);
