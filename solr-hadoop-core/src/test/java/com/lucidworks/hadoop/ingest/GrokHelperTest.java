@@ -12,6 +12,7 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mrunit.MapDriver;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -220,6 +221,7 @@ public class GrokHelperTest {
     Assert.assertTrue(response);
   }
 
+  @Ignore
   @Test
   public void addPatternsToHDFS() throws Exception {
     String conf = "filter {\n" +
