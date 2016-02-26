@@ -102,8 +102,9 @@ project('solr-hadoop-core') {
       transitive = false
     }
 
-    compile files('libs/jruby-complete-1.7.11.jar')
-    compile files('libs/logStash-grok.jar')
+    compile('org.jruby:jruby-complete:1.7.11')
+
+    compile files('libs/logstash-mapper-with-gems.jar')
 
     testCompile 'com.carrotsearch.randomizedtesting:junit4-ant:1.4.0'
     testCompile "org.apache.lucene:lucene-analyzers-common:${solrVersion}"

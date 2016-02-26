@@ -3,17 +3,6 @@ package com.lucidworks.hadoop.ingest;
 import com.lucidworks.hadoop.cache.DistributedCacheHandler;
 import com.lucidworks.hadoop.ingest.util.GrokHelper;
 import com.lucidworks.hadoop.io.LWDocument;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -24,6 +13,18 @@ import org.apache.hadoop.mapred.Reporter;
 import org.jruby.RubyHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
   private transient static Logger log = LoggerFactory.getLogger(GrokIngestMapper.class);
@@ -36,9 +37,9 @@ public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
   public static final String CONFIG_STRING_RUBY_PARAM = "config_string_param";
   public static final String ADDITIONAL_PATTERNS_RUBY_PARAM = "additional_patterns";
   public static final String FILTERS_ARRAY_RUBY_PARAM = "filters";
-  public static final String LOADER_RUBY_CLASS = "logStash-grok/loader.rb";
-  public static final String MATCHER_RUBY_CLASS = "logStash-grok/matcher.rb";
-  public static final String PATTERN_HANDLER_RUBY_CLASS = "logStash-grok/patternHandler.rb";
+  public static final String LOADER_RUBY_CLASS = "logstash-mapper/loader.rb";
+  public static final String MATCHER_RUBY_CLASS = "logstash-mapper/matcher.rb";
+  public static final String PATTERN_HANDLER_RUBY_CLASS = "logstash-mapper/pattern_handler.rb";
 
   public static final String PATH_FIELD_NAME = "path";
   public static final String BYTE_OFFSET_FIELD_NAME = "byte_offset";
@@ -70,9 +71,8 @@ public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
     }
 
     if (configurationString == null || configurationString.isEmpty()) {
-      throw new RuntimeException(
-          "Grok configuration not found at: " + conf.get(GROK_CONFIG_PATH) + " and URI: " + conf
-              .get(GROK_URI));
+      throw new RuntimeException("Grok configuration not found at: " + conf.get(GROK_CONFIG_PATH) + " and URI: " +
+          conf.get(GROK_URI));
     }
 
     Map<String, Object> params = new HashMap<String, Object>();
@@ -99,7 +99,7 @@ public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
 
   @Override
   protected LWDocument[] toDocuments(LongWritable key, Text value, Reporter reporter,
-      Configuration conf) throws IOException {
+                                     Configuration conf) throws IOException {
 
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(LOG_RUBY_PARAM, value.toString());
@@ -142,16 +142,14 @@ public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
   }
 
   public static Object executeScript(String resourcePath, Map<String, Object> params,
-      List<String> attributesToRemove) {
+                                     List<String> attributesToRemove) {
     ScriptEngineManager manager = new ScriptEngineManager();
     ScriptEngine engine = manager.getEngineByName("ruby");
-    InputStream resource = GrokIngestMapper.class.getClassLoader()
-        .getResourceAsStream(resourcePath);
+    InputStream resource = GrokIngestMapper.class.getClassLoader().getResourceAsStream(resourcePath);
 
     for (String toRemove : attributesToRemove) {
       engine.getContext().setAttribute(toRemove, params.get(toRemove),
-          ScriptContext.ENGINE_SCOPE);// necessary limit the scope to just
-      // engine
+          ScriptContext.ENGINE_SCOPE);// necessary limit the scope to just engine
     }
 
     for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -200,7 +198,7 @@ public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
     try {
       GrokHelper.addPatternDirToDC(response, conf);
     } catch (Exception e) {
-      System.out.println("Error caching grok additonal patterns: " + e.getMessage());
+      System.out.println("Error caching grok additional patterns: " + e.getMessage());
     }
   }
 }

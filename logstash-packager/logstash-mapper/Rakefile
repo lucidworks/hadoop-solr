@@ -1,0 +1,87 @@
+require 'open-uri'
+require 'warbler'
+
+# This is a set of tasks for re-packaging logstash so that:
+# 1. all gems in vendor/bundle/jruby/1.9/* are moved into a jruby-complete-with-gems jar
+# 2. unused files/dirs (jruby 2.1, ES, Kibana etc.) are thrown out
+# 3. the resulting package/jar is ready
+
+@work_path = "../work"
+@logstash_dirname = "logstash-1.4.2"
+@logstash_archive_name = "#{@logstash_dirname}.zip"
+@logstash_source_dir = "#{@work_path}/#{@logstash_dirname}"
+
+@jruby_complete = "jruby-complete-1.7.11"
+@jruby_complete_jar = "#{@jruby_complete}.jar"
+
+@logstash_mapper = "logstash-mapper"
+@logstash_mapper_jar = "#{@logstash_mapper}.jar"
+
+def log msg
+  puts msg
+end
+
+desc "create logstash mapper jar"
+Warbler::Task.new("jar", Warbler::Config.new do |config|
+  config.java_libs = []
+end)
+
+desc "downloads logstash"
+task :download do
+  mkdir @work_path rescue nil
+  uri = URI("https://download.elastic.co/logstash/logstash/#{@logstash_archive_name}")
+  log "Downloading #{uri}"
+  File.open("#{@work_path}/#{@logstash_archive_name}", "wb") do |result|
+    open(uri) do |src|
+      result.write(src.read)
+    end
+  end
+end
+
+desc "unzips logstash"
+task :expand do
+  log "Expanding #{@work_path}/#{@logstash_archive_name}"
+  rm_r @logstash_source_dir rescue nil
+  Zip::File.open("#{@work_path}/#{@logstash_archive_name}") do |zip_file|
+    zip_file.each do |f|
+      f_path = File.join(@work_path, f.name)
+      mkdir_p File.dirname(f_path)
+      zip_file.extract(f, f_path)
+    end
+  end
+end
+
+
+desc "pushes all of the ruby gems into the jruby-complete jar"
+task :bundle_jar do
+  new_logstash_mapper_jar = "#{@work_path}/#{@logstash_mapper}-with-gems.jar"
+  log "Bundling all gems into #{new_logstash_mapper_jar}"
+  
+  new_jruby_resources_tmp = "#{@work_path}/tmp"
+  mkdir new_jruby_resources_tmp rescue nil
+
+  #rm_r new_jruby_resources_tmp rescue nil
+
+  cp "#{@logstash_mapper_jar}", new_logstash_mapper_jar
+  
+  jruby_dir = "#{@logstash_source_dir}/vendor/bundle/jruby/1.9"
+  cp_r "#{jruby_dir}/specifications", "#{new_jruby_resources_tmp}/"
+  cp_r "#{jruby_dir}/gems", "#{new_jruby_resources_tmp}/"
+  cp_r "#{@logstash_source_dir}/lib/logstash", "#{new_jruby_resources_tmp}/"
+  cp_r "#{@logstash_source_dir}/patterns", "#{new_jruby_resources_tmp}/"
+  # replacing logstash environment with ours
+  cp "../environment.rb", "#{new_jruby_resources_tmp}/logstash/environment.rb"
+
+  # Update the jruby-complete jar with all of the jruby gems etc..
+  rejar = "jar vuf #{new_logstash_mapper_jar} -C ./#{new_jruby_resources_tmp} ."
+  log rejar
+  log `#{rejar}`
+  # Fixme: place the jar in solr-hadoop-core/libs (complete build)
+  # mv new_logstash_mapper_jar, ".."
+end
+
+
+desc "* MAIN TASK* - prepares a custom logstash tar file from scratch"
+task :package => [:jar, :download, :expand, :bundle_jar] do
+
+end
