@@ -107,7 +107,7 @@ project('solr-hadoop-core') {
 
     testCompile 'com.carrotsearch.randomizedtesting:junit4-ant:1.4.0'
     testCompile "org.apache.lucene:lucene-analyzers-common:${solrVersion}"
-    testCompile 'commons-collections:commons-collections:3.2.1'
+    testCompile 'commons-collections:commons-collections:3.2.2'
 
     testCompile "org.apache.solr:solr-test-framework:${solrVersion}"
     testCompile 'org.apache.mrunit:mrunit:1.0.0:hadoop2@jar'
