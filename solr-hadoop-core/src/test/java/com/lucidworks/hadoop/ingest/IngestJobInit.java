@@ -7,6 +7,7 @@ import com.lucidworks.hadoop.utils.SolrCloudClusterSupport;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -26,7 +27,6 @@ import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class IngestJobInit extends SolrCloudClusterSupport {
@@ -118,8 +118,8 @@ public class IngestJobInit extends SolrCloudClusterSupport {
     MockRecordWriter writer = IngestJobMockMapRedOutFormat.writers.get(jobName);
     assertNotNull(writer);
 
-    int c = counter - writer.map.size();
     assertEquals(counter, writer.map.size());
+
     // Get the first ID
     LWDocumentWritable doc1 = writer.map.get(ids[0]);
 
@@ -129,8 +129,7 @@ public class IngestJobInit extends SolrCloudClusterSupport {
       assertNotNull("No field " + field, doc1.getLWDocument().getFirstFieldValue(field));
     }
 
-    for (Map.Entry<String, LWDocumentWritable> entry : writer.map.entrySet())
-    {
+    for (Map.Entry<String, LWDocumentWritable> entry : writer.map.entrySet()) {
       if (log.isDebugEnabled()) {
         log.debug(entry.getKey() + "/" + entry.getValue());
       }

@@ -110,6 +110,28 @@ public class IngestJobTest extends IngestJobInit {
             "test1.pdf"}, "body", "Content-Type");
   }
 
+
+  @Test
+  public void testCSVquoteswithCircumflex() throws Exception {
+    String csv = "csv/quotes_with_circumflex.csv";
+    File csvFile = new File(ClassLoader.getSystemClassLoader().getResource(csv).getPath());
+    assertTrue(csv + " does not exist: " + csvFile.getAbsolutePath(), csvFile.exists());
+
+    Path input = new Path(tempDir, csv);
+    addContentToFS(input, Files.toString(csvFile, Charsets.UTF_8));
+
+    String jobName = "testCSVquoteswithCircumflex";
+    String[] args = TestUtils
+        .createHadoopJobArgsWithConf(jobName, CSVIngestMapper.class.getName(), DEFAULT_COLLECTION,
+            getBaseUrl(), input.toUri().toString(),
+            "csvDelimiter[^];csvFieldMapping[0=id,1=name_s];csvFirstLineComment[false]");
+
+    int val = ToolRunner.run(conf, new IngestJob(), args);
+    assertEquals(0, val);
+    // TODO: (ha"rry) the quotes is messing the field validator.
+    verifyJob(jobName, 2, new String[]{"2"});
+  }
+
   @Test
   public void testWarc() throws Exception {
     String warc = "warc/at.warc";

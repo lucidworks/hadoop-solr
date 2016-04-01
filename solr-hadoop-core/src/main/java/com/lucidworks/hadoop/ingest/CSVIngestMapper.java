@@ -1,13 +1,6 @@
 package com.lucidworks.hadoop.ingest;
 
 import com.lucidworks.hadoop.io.LWDocument;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.apache.hadoop.conf.Configuration;
@@ -17,6 +10,14 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.solr.common.util.StrUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.lucidworks.hadoop.utils.ConfigurationKeys.COLLECTION;
 
@@ -123,56 +124,55 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
 
   @Override
   protected LWDocument[] toDocuments(LongWritable key, Text value, Reporter reporter,
-      Configuration conf) throws IOException {
+                                     Configuration conf) throws IOException {
 
-    LWDocument result = null;
-    // Value is the CSV
-    if (!ignoreFirstLine || key.get() != 0) {
-      // TODO: ugh, better way of doing this? Do we have to recreate each time?
-      // Is this expensive?
-      CSVParser parser = new CSVParser(
-          new InputStreamReader(new ByteArrayInputStream(value.getBytes(), 0, value.getLength()),
-              "UTF-8"), strategy);
-      String[] vals;
-      try {
-        vals = parser.getLine();
-        result = createDocument();
-        if (vals != null) {
-          for (int i = 0; i < vals.length; i++) {
-            String rowValue = vals[i];
-            if (null != rowValue && !rowValue.trim().isEmpty()) {
-              String name = fieldMap.get(i);
-              if (name != null) {
-                if (i == 0 && useDefaultId) {
-                  // by default, the first string in vals will be the document id
-                  result.setId(rowValue);
-                } else {
-                  if (!useDefaultId && name.equals(idField)) {
-                    result.setId(rowValue);
-                  } else {
-                    result.addField(name, rowValue);
-                  }
-                }
-              } else {
-                // TODO: is this the best way to handle no field mapping
-                if (i == 0) {
-                  result.setId(vals[i]);
-                } else {
-                  result.addField(DEFAULT_FIELD_NAME + i, rowValue);
-                }
-              }
+    if (ignoreFirstLine && key.get() == 0) {
+      // Ignoring the First Line
+      return null;
+    }
+
+    CSVParser parser = new CSVParser(new InputStreamReader(new ByteArrayInputStream(value.getBytes(), 0, value
+        .getLength()), "UTF-8"), strategy);
+
+    try {
+      String[] row = parser.getLine();
+      if (row == null) {
+        log.warn("No values for document with key: {}, skipping", key.get());
+        return null;
+      }
+
+      LWDocument result = createDocument();
+      for (int i = 0; i < row.length; i++) {
+        String rowValue = row[i];
+        if (null == rowValue || rowValue.trim().isEmpty()) {
+          continue;
+        }
+        rowValue = rowValue.trim();
+        String name = fieldMap.get(i);
+        if (name != null) {
+          if (i == 0 && useDefaultId) {
+            // by default, the first string in vals will be the document id
+            result.setId(rowValue);
+          } else {
+            if (!useDefaultId && name.equals(idField)) {
+              result.setId(rowValue);
+            } else {
+              result.addField(name, rowValue);
             }
           }
         } else {
-          log.warn("No values for document with key: {}, skipping", key.get());
+          if (i == 0) {
+            result.setId(rowValue);
+          } else {
+            result.addField(DEFAULT_FIELD_NAME + i, rowValue);
+          }
         }
-      } catch (IOException e) {
-        log.error("Unable to parse document with key: " + key.get(), e);
       }
-    } else {// else ignore
-      return null;
+      return result.process();
+    } catch (IOException e) {
+      log.error("Unable to parse document with key: {} value: {}", key.get(), value, e);
     }
-    return result.process();
+    return null;
   }
 
   @Override
