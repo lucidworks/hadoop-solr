@@ -10,6 +10,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.util.ToolRunner;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -245,6 +246,7 @@ public class IngestJobTest extends IngestJobInit {
     assertEquals(4000, mockRecordWriter.map.size());
   }
 
+  @Ignore
   @Test
   public void testReducer() throws Exception {
     Path input = new Path(tempDir, "reducer.csv");
