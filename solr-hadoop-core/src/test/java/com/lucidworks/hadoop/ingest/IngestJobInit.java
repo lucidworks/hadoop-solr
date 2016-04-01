@@ -4,12 +4,6 @@ import com.lucidworks.hadoop.io.LWDocumentWritable;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
 import com.lucidworks.hadoop.utils.SolrCloudClusterSupport;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Map;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -24,6 +18,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestName;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -119,6 +118,10 @@ public class IngestJobInit extends SolrCloudClusterSupport {
     assertNotNull(writer);
 
     assertEquals(counter, writer.map.size());
+
+    if (ids == null) {
+      return;
+    }
 
     // Get the first ID
     LWDocumentWritable doc1 = writer.map.get(ids[0]);
