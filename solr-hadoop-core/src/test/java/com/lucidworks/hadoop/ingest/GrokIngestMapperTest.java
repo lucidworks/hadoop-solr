@@ -18,6 +18,7 @@ import org.jruby.Ruby;
 import org.jruby.RubyArray;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GrokIngestMapperTest extends BaseIngestMapperTestCase {
@@ -213,6 +214,7 @@ public class GrokIngestMapperTest extends BaseIngestMapperTestCase {
     // TODO: Check Fields
   }
 
+  @Ignore
   @Test
   public void testAdditionalPattern() throws Exception {
 
