@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
  **/
 public class IngestJobTest extends IngestJobInit {
 
+  @Ignore
   @Test
   public void testCSV() throws Exception {
     Path input = new Path(tempDir, "foo.csv");
