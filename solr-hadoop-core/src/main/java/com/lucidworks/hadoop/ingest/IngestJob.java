@@ -175,13 +175,7 @@ public class IngestJob extends AbstractJob {
     if (outputFormatName == null || outputFormatName.equals(LWMapRedOutputFormat.class.getName())) {
       log.info("Using default OutputFormat: {}", LWMapRedOutputFormat.class.getName());
       conf.setOutputFormat(LWMapRedOutputFormat.class);
-      if (zk != null && !zk.isEmpty()) {
-        conf.set(ZK_CONNECT, zk);
-        conf.set(LucidWorksWriter.SOLR_ZKHOST, zk);
-      } else if (solr != null && !solr.isEmpty()) {
-        conf.set(SOLR_SERVER_URL, solr);
-        conf.set(LucidWorksWriter.SOLR_SERVER_URL, solr);
-      } else {
+      if (!checkSolrOrZkString(conf)) {
         System.out.println("You must specify either the " + ZK_CONNECT_OPTION + " or the " + SOLR_SERVER_OPTION);
         return 1;
       }
@@ -283,7 +277,7 @@ public class IngestJob extends AbstractJob {
   }
 
   public void doFinalCommit(JobConf conf, RunningJob job) {
-    if (conf.getBoolean("lww.commit.on.close", false)) {
+    if (conf.getBoolean("lww.commit.on.close", false) && checkSolrOrZkString(conf)) {
       String jobName = job.getJobName();
       log.info("Performing final commit for job " + jobName);
       // Progress can be null here, because no write operation is performed.
@@ -309,5 +303,20 @@ public class IngestJob extends AbstractJob {
       log.error("Error while checking Solr Server", e);
       return false;
     }
+  }
+
+  private boolean checkSolrOrZkString(JobConf conf) {
+    String zk = getOption(ZK_CONNECT_OPTION);
+    String solr = getOption(SOLR_SERVER_OPTION);
+    if (zk != null && !zk.isEmpty()) {
+      conf.set(ZK_CONNECT, zk);
+      conf.set(LucidWorksWriter.SOLR_ZKHOST, zk);
+      return true;
+    } else if (solr != null && !solr.isEmpty()) {
+      conf.set(SOLR_SERVER_URL, solr);
+      conf.set(LucidWorksWriter.SOLR_SERVER_URL, solr);
+      return true;
+    }
+    return false;
   }
 }
