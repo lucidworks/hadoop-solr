@@ -381,7 +381,7 @@ The number of reducers to use when outputting to the OutputFormat. Depending on 
 
 Using this example job jar argument:
 
-[source,bash]
+[source,bash,subs="verbatim,attributes"]
 ----
 bin/hadoop jar /path/to/{packageUser}-hadoop-job-{connectorVersion}.jar --<1>
 
@@ -394,7 +394,7 @@ bin/hadoop jar /path/to/{packageUser}-hadoop-job-{connectorVersion}.jar --<1>
 
 We can summarize the proper order as follows:
 
-<1> The Hadoop command to run a job. This includes the path to the job jar (as necessary, depending on its location on the filesystem).
+<1> The Hadoop command to run a job. This includes the path to the job jar (as necessary).
 <2> The main ingest class.
 <3> Mapper arguments, which vary depending on the Mapper class chosen, in the format of `-Dargument=value`.
 <4> Key-value arguments, which include the ingest mapper, Solr collection name, and other parameters, in the format of `-argument value`.
