@@ -46,6 +46,8 @@ public class IngestJob extends AbstractJob {
   public static final String OUTPUT_FORMAT_OVERRIDE = "outputFormatOverride";
   public static final String CONF_OPTION = "conf";
   public static final String JOB_NAME_OPTION = "name";
+  public static final String QUIET = "quiet";
+
 
   public static void main(String[] args) throws Exception {
     System.exit(ToolRunner.run(new IngestJob(), args));
@@ -82,6 +84,7 @@ public class IngestJob extends AbstractJob {
     addOption(NUM_REDUCERS_OPTION, "ur",
         "An Integer >= 0 indicating the number of Reducers to use when outputing to the OutputFormat.  "
             + "Depending on the OutputFormat and your system resources, you may wish to have Hadoop do a reduce step first so as to not open too many connections to the output resource.  Default is to not use any reducers.  Note, ");
+    addFlag(QUIET, "q", "Quiet option for common.AbstractJob");
 
     Map<String, List<String>> map = parseArguments(args, false, true);
     if (map == null) {
