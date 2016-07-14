@@ -112,7 +112,7 @@ public class IngestJobTest extends IngestJobInit {
     assertEquals(0, val);
     verifyJob(jobName, 6,
         new String[]{"test0.pdf", "test1.doc", "test0.doc", "test3.pdf", "test2.pdf",
-            "test1.pdf"}, "body", "Content-Type");
+            "test1.pdf"});
   }
 
 
