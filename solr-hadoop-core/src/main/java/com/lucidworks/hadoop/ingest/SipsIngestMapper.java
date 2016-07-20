@@ -23,7 +23,6 @@ public class SipsIngestMapper extends AbstractIngestMapper<Text, DoubleWritable>
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
       boolean override = conf.getBoolean(IngestJob.INPUT_FORMAT_OVERRIDE, false);
       if (override == false) {
         conf.setInputFormat(SequenceFileInputFormat.class);
@@ -37,7 +36,7 @@ public class SipsIngestMapper extends AbstractIngestMapper<Text, DoubleWritable>
     Map<String, String> metadata = new HashMap<String, String>();
     LWDocument doc = createDocument(key.toString(), metadata);
     doc.addField("sip_score", value);
-    return doc.process();
+    return new LWDocument[] {doc};
   }
 
   @Override

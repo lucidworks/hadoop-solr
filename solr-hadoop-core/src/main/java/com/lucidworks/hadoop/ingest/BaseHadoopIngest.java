@@ -24,11 +24,6 @@ public abstract class BaseHadoopIngest {
     this.conf = conf;
     this.jobName = conf.getJobName();
     System.setProperty("java.awt.headless", "true");
-    try {
-      LWDocumentProvider.configure(conf);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   public void close() throws IOException {

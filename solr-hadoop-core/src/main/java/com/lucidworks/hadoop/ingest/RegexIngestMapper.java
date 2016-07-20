@@ -28,7 +28,6 @@ public class RegexIngestMapper extends AbstractIngestMapper<Writable, Writable> 
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
     }
   };
 
@@ -95,7 +94,7 @@ public class RegexIngestMapper extends AbstractIngestMapper<Writable, Writable> 
       doc.addField(FIELD_PATH, originalLogFilePath);
       String docId = originalLogFilePath + "-" + doc.getId();
       doc.setId(docId);
-      return doc.process();
+      return new LWDocument[] {doc};
     }
     return null;
   }

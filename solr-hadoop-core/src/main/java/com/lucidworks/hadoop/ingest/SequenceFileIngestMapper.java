@@ -16,7 +16,6 @@ public class SequenceFileIngestMapper extends AbstractIngestMapper<Writable, Wri
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
       conf.setInputFormat(SequenceFileInputFormat.class);
     }
   };
@@ -50,7 +49,7 @@ public class SequenceFileIngestMapper extends AbstractIngestMapper<Writable, Wri
       doc.setContent(WritableUtils.toByteArray(value));
       reporter.getCounter(Counters.RAW_WRITABLE).increment(1);
     }
-    return doc.process();
+    return new LWDocument[] {doc};
   }
 
 }
