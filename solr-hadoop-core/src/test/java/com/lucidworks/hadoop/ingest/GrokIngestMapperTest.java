@@ -38,7 +38,6 @@ public class GrokIngestMapperTest extends BaseIngestMapperTestCase {
 
     setupCommonConf(configuration);
     jobConf = new JobConf(configuration);
-    LWDocumentProvider.init(jobConf);
   }
 
   @Test

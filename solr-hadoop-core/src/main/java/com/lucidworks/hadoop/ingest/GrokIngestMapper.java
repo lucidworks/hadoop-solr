@@ -49,7 +49,6 @@ public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
       fillDistributeCache(conf);
     }
   };
@@ -128,10 +127,9 @@ public class GrokIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
         document.addField(BYTE_OFFSET_FIELD_NAME, key.toString());
 
         // Set ID
-        document
-            .setId(originalLogFilePath + "-" + key.toString() + "-" + System.currentTimeMillis());
+        document.setId(originalLogFilePath + "-" + key.toString() + "-" + System.currentTimeMillis());
 
-        return document.process();
+        return new LWDocument[] {document};
       } else {
         return null;
       }

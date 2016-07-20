@@ -4,6 +4,7 @@ import com.lucidworks.hadoop.cache.DistributedCacheHandler;
 import com.lucidworks.hadoop.io.LWDocument;
 import com.lucidworks.hadoop.io.LWDocumentProvider;
 import com.lucidworks.hadoop.io.XMLInputFormat;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -21,6 +22,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,10 +41,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.LinkedList;
-import java.util.List;
 
 public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
 
@@ -49,7 +51,6 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
       String xslt = conf.get(LWW_XSLT);
       if (xslt != null) {
         DistributedCacheHandler.addFileToCache(conf, new Path(xslt), LWW_XSLT);
@@ -58,7 +59,8 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
       if (!override) {
         conf.setInputFormat(XMLInputFormat.class);
         if (conf.get(XMLInputFormat.START_TAG_KEY) == null || conf.get(XMLInputFormat.END_TAG_KEY) == null) {
-          throw new RuntimeException("Missing XMLInputFormat Tags " + XMLInputFormat.START_TAG_KEY + " and/or " + XMLInputFormat.END_TAG_KEY);
+          throw new RuntimeException("Missing XMLInputFormat Tags " + XMLInputFormat.START_TAG_KEY + " and/or " +
+            XMLInputFormat.END_TAG_KEY);
         }
       } // else the user has overridden the input format and we assume it is OK.
     }
@@ -118,7 +120,11 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
   }
 
   @Override
-  protected LWDocument[] toDocuments(Writable key, Text text, Reporter reporter, Configuration configuration) throws IOException {
+  protected LWDocument[] toDocuments(
+    Writable key,
+    Text text,
+    Reporter reporter,
+    Configuration configuration) throws IOException {
     LWDocument[] docs = null;
     try {
       docs = toDocumentsImpl(key, text);
@@ -136,7 +142,9 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
     return docs;
   }
 
-  protected LWDocument[] toDocumentsImpl(Writable key, Text text) throws Exception {
+  protected LWDocument[] toDocumentsImpl(
+    Writable key,
+    Text text) throws Exception {
 
     String dataText = text.toString();
     InputSource input = new InputSource(new StringReader(dataText));
@@ -181,7 +189,10 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
     return docs.toArray(new LWDocument[0]);
   }
 
-  protected LWDocument processElement(String keyStr, Element elm, int docIndex) {
+  protected LWDocument processElement(
+    String keyStr,
+    Element elm,
+    int docIndex) {
 
     String docId = null;
     if (idXPathExpr != null) {
@@ -219,7 +230,10 @@ public class XMLIngestMapper extends AbstractIngestMapper<Writable, Text> {
     return pDoc;
   }
 
-  protected void addFieldsToDoc(String fieldPrefix, Element elm, LWDocument pDoc) {
+  protected void addFieldsToDoc(
+    String fieldPrefix,
+    Element elm,
+    LWDocument pDoc) {
     NamedNodeMap attrs = elm.getAttributes();
     if (attrs != null) {
       for (int a = 0; a < attrs.getLength(); a++) {

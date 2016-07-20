@@ -42,7 +42,6 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
       boolean override = conf.getBoolean(IngestJob.INPUT_FORMAT_OVERRIDE, false);
       if (!override) {
         conf.setInputFormat(TextInputFormat.class);
@@ -131,8 +130,8 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
       return null;
     }
 
-    CSVParser parser = new CSVParser(new InputStreamReader(new ByteArrayInputStream(value.getBytes(), 0, value
-        .getLength()), "UTF-8"), strategy);
+    CSVParser parser = new CSVParser(
+      new InputStreamReader(new ByteArrayInputStream(value.getBytes(), 0, value.getLength()), "UTF-8"), strategy);
 
     try {
       String[] row = parser.getLine();
@@ -141,7 +140,7 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
         return null;
       }
 
-      LWDocument result = createDocument();
+      LWDocument document = createDocument();
       for (int i = 0; i < row.length; i++) {
         String rowValue = row[i];
         if (null == rowValue || rowValue.trim().isEmpty()) {
@@ -152,23 +151,23 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
         if (name != null) {
           if (i == 0 && useDefaultId) {
             // by default, the first string in vals will be the document id
-            result.setId(rowValue);
+            document.setId(rowValue);
           } else {
             if (!useDefaultId && name.equals(idField)) {
-              result.setId(rowValue);
+              document.setId(rowValue);
             } else {
-              result.addField(name, rowValue);
+              document.addField(name, rowValue);
             }
           }
         } else {
           if (i == 0) {
-            result.setId(rowValue);
+            document.setId(rowValue);
           } else {
-            result.addField(DEFAULT_FIELD_NAME + i, rowValue);
+            document.addField(DEFAULT_FIELD_NAME + i, rowValue);
           }
         }
       }
-      return result.process();
+      return new LWDocument[] {document};
     } catch (IOException e) {
       log.error("Unable to parse document with key: {} value: {}", key.get(), value, e);
     }

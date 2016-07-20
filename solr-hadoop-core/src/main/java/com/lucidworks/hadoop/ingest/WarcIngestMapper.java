@@ -1,15 +1,18 @@
 package com.lucidworks.hadoop.ingest;
 
 import com.lucidworks.hadoop.io.LWDocument;
-import edu.cmu.lemurproject.WarcFileInputFormat;
-import edu.cmu.lemurproject.WarcRecord;
-import edu.cmu.lemurproject.WritableWarcRecord;
-import java.io.IOException;
-import java.util.Map;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Reporter;
+
+import java.io.IOException;
+import java.util.Map;
+
+import edu.cmu.lemurproject.WarcFileInputFormat;
+import edu.cmu.lemurproject.WarcRecord;
+import edu.cmu.lemurproject.WritableWarcRecord;
 
 public class WarcIngestMapper extends AbstractIngestMapper<LongWritable, WritableWarcRecord> {
 
@@ -18,7 +21,6 @@ public class WarcIngestMapper extends AbstractIngestMapper<LongWritable, Writabl
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
       conf.setInputFormat(WarcFileInputFormat.class);
     }
   };
@@ -29,8 +31,11 @@ public class WarcIngestMapper extends AbstractIngestMapper<LongWritable, Writabl
   }
 
   @Override
-  public LWDocument[] toDocuments(LongWritable _, WritableWarcRecord value, Reporter reporter,
-      Configuration conf) throws IOException {
+  public LWDocument[] toDocuments(
+    LongWritable _,
+    WritableWarcRecord value,
+    Reporter reporter,
+    Configuration conf) throws IOException {
     String id = value.getRecord().getHeaderMetadataItem("WARC-Record-ID");
     LWDocument doc = createDocument(id, null);
     WarcRecord record = value.getRecord();
@@ -39,7 +44,7 @@ public class WarcIngestMapper extends AbstractIngestMapper<LongWritable, Writabl
     for (Map.Entry<String, String> entry : record.getHeaderMetadata()) {
       doc.addField(WARC_FIELD + entry.getKey(), entry.getValue());
     }
-    return doc.process();
+    return new LWDocument[]{doc};
   }
 
 }

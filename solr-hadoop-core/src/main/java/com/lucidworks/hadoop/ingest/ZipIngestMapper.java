@@ -2,6 +2,7 @@ package com.lucidworks.hadoop.ingest;
 
 import com.lucidworks.hadoop.io.LWDocument;
 import com.lucidworks.hadoop.io.ZipFileInputFormat;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
@@ -19,7 +20,6 @@ public class ZipIngestMapper extends AbstractIngestMapper<Text, BytesWritable> {
   private final AbstractJobFixture fixture = new AbstractJobFixture() {
     @Override
     public void init(JobConf conf) throws IOException {
-      super.init(conf);
       conf.setInputFormat(ZipFileInputFormat.class);
       ZipFileInputFormat.setLenient(true);
     }
@@ -36,17 +36,21 @@ public class ZipIngestMapper extends AbstractIngestMapper<Text, BytesWritable> {
   }
 
   @Override
-  public LWDocument[] toDocuments(Text key, BytesWritable value, Reporter reporter,
-                                  Configuration conf) throws IOException {
-    Map<String, String> metadata = new HashMap<String, String>();
+  public LWDocument[] toDocuments(
+    Text key,
+    BytesWritable value,
+    Reporter reporter,
+    Configuration conf) throws IOException {
+
+    Map<String, String> metadata = new HashMap<>();
     String mimeType = conf.get(MIME_TYPE, null);
     if (mimeType != null) {
       metadata.put(MIME_TYPE, mimeType);
     }
-    LWDocument doc = createDocument(key.toString(), metadata);
-    doc.setContent(value.getBytes());
+    LWDocument document = createDocument(key.toString(), metadata);
+    document.setContent(value.getBytes());
 
-    return doc.process();
+    return new LWDocument[] {document};
   }
 
 }

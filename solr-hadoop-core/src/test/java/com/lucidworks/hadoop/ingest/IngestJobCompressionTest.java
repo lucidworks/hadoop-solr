@@ -3,8 +3,8 @@ package com.lucidworks.hadoop.ingest;
 import com.google.common.io.Files;
 import com.lucidworks.hadoop.io.LWDocument;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
+import com.lucidworks.hadoop.utils.JobArgs;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
-import com.lucidworks.hadoop.utils.TestUtils;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
 import org.junit.Assert;
@@ -32,10 +32,12 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, input);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgsWithConf(jobName, CSVIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString(),
-            "csvFieldMapping[0=id,1=count,2=body,3=title,4=footer]");
+    String[] args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString())
+                                 .withConf("csvFieldMapping[0=id,1=count,2=body,3=title,4=footer]")
+                                 .withOutputFormat(IngestJobMockMapRedOutFormat.class.getName())
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -68,10 +70,12 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, input);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgsWithConf(jobName, CSVIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString(),
-            "csvFieldMapping[0=id,1=count,2=body,3=title,4=footer]");
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString())
+                                 .withConf("csvFieldMapping[0=id,1=count,2=body,3=title,4=footer]")
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -109,10 +113,11 @@ public class IngestJobCompressionTest extends IngestJobInit {
     }
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, DirectoryIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(),
-            input.toUri().toString() + File.separator + "dir" + File.separator + "frank_txt*.gz");
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(DirectoryIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + "dir" + File.separator + "frank_txt*.gz")
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -155,10 +160,10 @@ public class IngestJobCompressionTest extends IngestJobInit {
     }
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, DirectoryIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(),
-            input.toUri().toString() + File.separator + "dir" + File.separator + "frank_txt*.bz2");
+    String[] args = new JobArgs().withJobName(jobName).withClassname(DirectoryIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + "dir" + File.separator + "frank_txt*.bz2")
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -203,10 +208,12 @@ public class IngestJobCompressionTest extends IngestJobInit {
     assertTrue(grokFile + " does not exist: " + grokFile.getAbsolutePath(), grokFile.exists());
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopOptionalArgs(jobName, GrokIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName,
-            "-Dgrok.uri=" + grokFile);
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(GrokIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .withDArgs( "-Dgrok.uri=" + grokFile)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -251,10 +258,12 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, logStashConfigurationDst);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopOptionalArgs(jobName, GrokIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName,
-            "-Dgrok.uri=" + logStashConfigurationDst.toString());
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(GrokIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .withDArgs("-Dgrok.uri=" + logStashConfigurationDst.toString())
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -291,11 +300,14 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopOptionalArgs(jobName, RegexIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName,
-            "-D" + RegexIngestMapper.REGEX + "=\\w+",
-            "-D" + RegexIngestMapper.GROUPS_TO_FIELDS + "=0=matchFound");
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(RegexIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .withDArgs("-D" + RegexIngestMapper.REGEX + "=\\w+",
+                                   "-D" + RegexIngestMapper.GROUPS_TO_FIELDS + "=0=matchFound")
+                                 .getJobArgs();
+
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -332,11 +344,13 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopOptionalArgs(jobName, RegexIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName,
-            "-D" + RegexIngestMapper.REGEX + "=\\w+",
-            "-D" + RegexIngestMapper.GROUPS_TO_FIELDS + "=0=matchFound");
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(RegexIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .withDArgs("-D" + RegexIngestMapper.REGEX + "=\\w+",
+                                   "-D" + RegexIngestMapper.GROUPS_TO_FIELDS + "=0=matchFound")
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -374,9 +388,11 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, SequenceFileIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(SequenceFileIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -415,9 +431,11 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, SequenceFileIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(SequenceFileIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -456,9 +474,10 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, SolrXMLIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+    String[] args = new JobArgs().withJobName(jobName).withClassname(SolrXMLIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -497,9 +516,10 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, SolrXMLIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+    String[] args = new JobArgs().withJobName(jobName).withClassname(SolrXMLIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -534,9 +554,11 @@ public class IngestJobCompressionTest extends IngestJobInit {
     addContentToFS(input, Files.toByteArray(warcFile));
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, WarcIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString());
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(WarcIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString())
+                                 .getJobArgs();
 
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
@@ -575,9 +597,11 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, WarcIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(WarcIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -614,9 +638,11 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, ZipIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(ZipIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
@@ -653,9 +679,11 @@ public class IngestJobCompressionTest extends IngestJobInit {
     fs.copyFromLocalFile(localPath, currentInput);
 
     String jobName = "JobCompressionTest" + System.currentTimeMillis();
-    String[] args = TestUtils
-        .createHadoopJobArgs(jobName, ZipIngestMapper.class.getName(), DEFAULT_COLLECTION,
-            getBaseUrl(), input.toUri().toString() + File.separator + compressedFileName);
+
+    String[] args = new JobArgs().withJobName(jobName).withClassname(ZipIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString() + File.separator + compressedFileName)
+                                 .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
 
