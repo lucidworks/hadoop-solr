@@ -1,5 +1,5 @@
 :packageUser: solr
-:connectorVersion: 2.2.5
+:connectorVersion: 2.2.2
 
 = Hadoop Job Jar
 
@@ -46,12 +46,9 @@ Once the submodule has been pulled, you can build the job jar with this command:
 
 `./gradlew clean shadowJar --info`
 
-This will produce one jar, named `{packageUser}-hadoop-job-{connectorVersion}.jar`, located in the `solr-hadoop-job/build/libs` directory.
+This will produce one jar, named `{packageUser}-hadoop-job-{connectorVersion}.jar`, located in the a `solr-hadoop-job/build/libs` directory.
 
 If you rebuild the job jar at a later time (to take advantage of updates), remember to update the submodule with `git submodule update`.
-
-NOTE: The Gradle task will also produce `{packageUser}-hadoop-tika-{connectorVersion}.jar` located in the `solr-hadoop-common/solr-hadoop-tika/build/libs` directory.
-
 // end::build[]
 
 // tag::how-to-use[]
@@ -214,14 +211,6 @@ _Default_: false.  _Required_: No.
 If true, the exploration of a folder will be recursive, meaning it will look for subdirectories to traverse for documents.
 +
 _Default_: false. _Required_: No.
-
-`-Dlw.tika.process`:::
-If true, the tika process will perform.
-+
-_Default_: false. _Required_: No.
-
-WARNING: If `-Dlw.tika.process` is set to true, the `{packageUser}-hadoop-tika-{connectorVersion}.jar` should be added with `-libjars` argument.
-
 
 [#csv]
 CSV Ingest Mapper Arguments::
