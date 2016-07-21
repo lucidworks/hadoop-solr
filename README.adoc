@@ -1,5 +1,5 @@
 :packageUser: solr
-:connectorVersion: 2.2.2
+:connectorVersion: 2.2.5
 
 = Hadoop Job Jar
 
@@ -46,9 +46,12 @@ Once the submodule has been pulled, you can build the job jar with this command:
 
 `./gradlew clean shadowJar --info`
 
-This will produce one jar, named `{packageUser}-hadoop-job-{connectorVersion}.jar`, located in the a `solr-hadoop-job/build/libs` directory.
+This will produce one jar, named `{packageUser}-hadoop-job-{connectorVersion}.jar`, located in the `solr-hadoop-job/build/libs` directory.
 
 If you rebuild the job jar at a later time (to take advantage of updates), remember to update the submodule with `git submodule update`.
+
+NOTE: The Gradle task will also produce `{packageUser}-hadoop-tika-{connectorVersion}.jar` located in the `solr-hadoop-common/solr-hadoop-tika/build/libs` directory. This jar will be needed if you use the `-Dlw.tika.process` parameter described below. Using Tika is recommended when when using the DirectoryIngestMapper or the ZipIngestMapper.
+
 // end::build[]
 
 // tag::how-to-use[]
@@ -107,7 +110,7 @@ This ingest mapper allows you to index documents found in a defined directory. T
 
 There are no special arguments for this ingest mapper.
 
-Apache Tika will be used to extract content from these files, so file types supported by Tika will be parsed.
+When using this ingest mapper, you may want to also use Apache Tika to parse the files. See the `-Dlw.tika.process` parameter below for details on how to flag the job to use Apache Tika and add the required .jar.
 
 === Grok Ingest Mapper
 This ingest mapper allows you to index log files based on a Logstash configuration file. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.GrokIngestMapper`.
@@ -168,7 +171,7 @@ _Supports_: WarcFileInputFormat documents.
 === Zip Ingest Mapper
 This ingest mapper allows you to index documents contained in `.zip` files. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.ZipIngestMapper`.
 
-There are no special arguments for this ingest mapper.
+There are no special arguments for this ingest mapper. However, when using this ingest mapper, you may want to also use Apache Tika to parse the files. See the `-Dlw.tika.process` parameter below for details on how to flag the job to use Apache Tika and add the required .jar.
 
 _Supports_: ZipFileInputFormat documents.
 // end::ingest-mappers[]
@@ -211,6 +214,14 @@ _Default_: false.  _Required_: No.
 If true, the exploration of a folder will be recursive, meaning it will look for subdirectories to traverse for documents.
 +
 _Default_: false. _Required_: No.
+
+`-Dlw.tika.process`:::
+If true, Apache Tika will be used to parse files. This is most commonly needed when using the DirectoryIngestMapper or the ZipIngestMapper.
++
+_Default_: false. _Required_: No.
+
+WARNING: If `-Dlw.tika.process` is set to true, the `{packageUser}-hadoop-tika-{connectorVersion}.jar` (including the path, if necessary) should be added to the job arguments with `-libjars` argument.
+
 
 [#csv]
 CSV Ingest Mapper Arguments::
