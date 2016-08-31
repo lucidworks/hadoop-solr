@@ -10,6 +10,9 @@ plugins {
   id 'com.github.johnrengelman.shadow' version '1.2.2'
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.9'
+}
 
 ext {
   publishedProjects = subprojects - project(':solr-hadoop-common')

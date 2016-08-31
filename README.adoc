@@ -52,6 +52,23 @@ If you rebuild the job jar at a later time (to take advantage of updates), remem
 
 NOTE: The Gradle task will also produce `{packageUser}-hadoop-tika-{connectorVersion}.jar` located in the `solr-hadoop-common/solr-hadoop-tika/build/libs` directory. This jar will be needed if you use the `-Dlw.tika.process` parameter described below. Using Tika is recommended when when using the DirectoryIngestMapper or the ZipIngestMapper.
 
+=== Troubleshooting
+
+If GitHub + SSH is not configured the following exception will be thrown:
+
+[source]
+----
+    Cloning into 'solr-hadoop-common'...
+    Permission denied (publickey).
+    fatal: Could not read from remote repository.
+
+    Please make sure you have the correct access rights
+    and the repository exists.
+    fatal: clone of 'git@github.com:LucidWorks/solr-hadoop-common.git' into submodule path 'solr-hadoop-common' failed
+----
+
+Use the next tutorial to fix the exception: https://help.github.com/articles/generating-an-ssh-key/
+
 // end::build[]
 
 // tag::how-to-use[]
