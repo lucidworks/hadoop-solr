@@ -7,9 +7,12 @@ buildscript {
 }
 
 plugins {
-  id 'com.github.johnrengelman.shadow' version '1.2.2'
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.0'
+}
 
 ext {
   publishedProjects = subprojects - project(':solr-hadoop-common')
@@ -34,6 +37,11 @@ subprojects {
       tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
       }
+    }
+
+    test {
+      reports.html.destination = file("$buildDir/reports/tests")
+      reports.junitXml.destination = file("$buildDir/test-results")
     }
 
     jacocoTestReport {
