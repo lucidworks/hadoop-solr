@@ -39,6 +39,10 @@ subprojects {
       }
     }
 
+    test {
+      reports.html.destination = file("$buildDir/reports/tests")
+    }
+
     jacocoTestReport {
       reports {
         xml.enabled false
