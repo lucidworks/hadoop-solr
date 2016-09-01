@@ -41,6 +41,7 @@ subprojects {
 
     test {
       reports.html.destination = file("$buildDir/reports/tests")
+      reports.junitXml.destination = file("$buildDir/test-results")
     }
 
     jacocoTestReport {
