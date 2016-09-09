@@ -428,3 +428,83 @@ We can summarize the proper order as follows:
 <4> Key-value arguments, which include the ingest mapper, Solr collection name, and other parameters, in the format of `-argument value`.
 // end::summary[]
 // end::how-to-use[]
+
+=== How to contribute
+
+1. Fork a repo i.e. <username|organization>/hadoop-solr, follow the next tutorial: http://help.github.com/fork-a-repo/[http://help.github.com/fork-a-repo/]
+2. Clone the forked repo on your local machine:
+
+[source, git]
+----------------------------------------------------------------------
+$ git clone https://github.com/<username|organization>/hadoop-solr.git
+----------------------------------------------------------------------
+
+3. Configure remotes, use the following tutorial: https://help.github.com/articles/configuring-a-remote-for-a-fork/[https://help.github.com/articles/configuring-a-remote-for-a-fork/]
+4. Create a new branch
+
+[source]
+----------------------------
+$ git checkout -b new_branch
+$ git push origin new_branch
+----------------------------
+
+Use the next tutorial: https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/[https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/], to create the branch from GitHub UI
+
+6. Develop on `new_branch` branch `only`, `do not merge _new_branch_ branch to your master`
+7. Commit changes to `new_branch` branch:
+
+[source]
+---------------------------------
+$ git add <filename>
+$ git commit -m 'commit message'
+---------------------------------
+
+8. Push changes to GitHub
+
+[source]
+---------------------------------
+$ git push origin new_branch
+---------------------------------
+
+9. Repeat steps 6-8 until development is complete
+10. Fetch upstream changes that were done by other contributors:
+
+[source]
+---------------------
+$ git fetch upstream
+---------------------
+
+11. Update local master:
+
+[source]
+---------------------------
+$ git checkout master
+$ git pull upstream master
+---------------------------
+
+12. Merge master branch into `new_branch` branch
+
+[source]
+---------------------------
+$ git checkout new_branch
+$ git merge master
+---------------------------
+
+13. If conflicts would happen, use this tutorial to fix them: https://help.github.com/articles/resolving-a-merge-conflict-from-the-command-line/[https://help.github.com/articles/resolving-a-merge-conflict-from-the-command-line/]
+14. Push master changes to `new_branch` branch
+
+[source]
+---------------------------------
+$ git push origin new_branch
+---------------------------------
+
+14. Add jUnits that reflect your work
+15. When all testing is done, Create a pull request, use the following tutorial: https://help.github.com/articles/creating-a-pull-request/
+Attention: Please recheck that in your pull request you send only your changes, and no other changes.
+
+Check it by using the command:
+
+[source]
+-------------------------------------
+git diff new_branch upstream/master
+-------------------------------------
