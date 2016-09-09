@@ -429,7 +429,7 @@ We can summarize the proper order as follows:
 // end::summary[]
 // end::how-to-use[]
 
-=== How to contribute
+== How to contribute
 
 1. Fork a repo i.e. <username|organization>/hadoop-solr, follow the next tutorial: http://help.github.com/fork-a-repo/[http://help.github.com/fork-a-repo/]
 2. Clone the forked repo on your local machine:
