@@ -429,90 +429,67 @@ We can summarize the proper order as follows:
 // end::summary[]
 // end::how-to-use[]
 
+// tag::contribute[]
 == How to contribute
 
-1. Fork a repo i.e. <username|organization>/hadoop-solr, follow the next tutorial: http://help.github.com/fork-a-repo/[http://help.github.com/fork-a-repo/]
-2. Clone the forked repo on your local machine:
-
+. Fork this repo i.e. <username|organization>/hadoop-solr, following the http://help.github.com/fork-a-repo/[fork a repo/] tutorial. Then, clone the forked repo on your local machine:
++
 [source, git]
-----------------------------------------------------------------------
 $ git clone https://github.com/<username|organization>/hadoop-solr.git
-----------------------------------------------------------------------
-
-[start=3]
-3. Configure remotes, use the following tutorial: https://help.github.com/articles/configuring-a-remote-for-a-fork/[https://help.github.com/articles/configuring-a-remote-for-a-fork/]
-4. Create a new branch
-
++
+. Configure remotes with the https://help.github.com/articles/configuring-a-remote-for-a-fork/[configuring remotes] tutorial.
+. Create a new branch:
++
 [source]
-----------------------------
 $ git checkout -b new_branch
 $ git push origin new_branch
-----------------------------
-
-Use the next tutorial: https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/[https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/], to create the branch from GitHub UI
-
-[start=5]
-5. Develop on `new_branch` branch `only`, `do not merge _new_branch_ branch to your master`
-6. Commit changes to `new_branch` branch:
-
++
+Use the https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/[creating branches] tutorial to create the branch from GitHub UI if you prefer.
++
+. Develop on `new_branch` branch only, *do not merge `new_branch` to your master*. Commit changes to `new_branch` as often as you like:
++
 [source]
----------------------------------
 $ git add <filename>
 $ git commit -m 'commit message'
----------------------------------
-
-[start=7]
-7. Push changes to GitHub
-
++
+. Push your changes to GitHub.
++
 [source]
----------------------------------
 $ git push origin new_branch
----------------------------------
-
-[start=8]
-8. Repeat steps 6-8 until development is complete
-9. Fetch upstream changes that were done by other contributors:
-
++
+. Repeat the commit & push steps until your development is complete.
+. Before submitting a pull request, fetch upstream changes that were done by other contributors:
++
 [source]
----------------------
 $ git fetch upstream
----------------------
-
-[start=10]
-10. Update local master:
-
++
+. And update master locally:
++
 [source]
----------------------------
 $ git checkout master
 $ git pull upstream master
----------------------------
-
-[start=11]
-11. Merge master branch into `new_branch` branch
-
++
+. Merge master branch into `new_branch` in order to avoid conflicts:
++
 [source]
----------------------------
 $ git checkout new_branch
 $ git merge master
----------------------------
-
-[start=12]
-12. If conflicts would happen, use this tutorial to fix them: https://help.github.com/articles/resolving-a-merge-conflict-from-the-command-line/[https://help.github.com/articles/resolving-a-merge-conflict-from-the-command-line/]
-13. Push master changes to `new_branch` branch
-
++
+. If conflicts happen, use the  https://help.github.com/articles/resolving-a-merge-conflict-from-the-command-line/[resolving merge conflicts] tutorial to fix them:
+. Push master changes to `new_branch` branch
++
 [source]
----------------------------------
 $ git push origin new_branch
----------------------------------
++
+. Add jUnits, as appropriate to test your changes.
+. When all testing is done, use the https://help.github.com/articles/creating-a-pull-request/[create a pull request] tutorial to submit your change to the repo.
 
-[start=14]
-14. Add jUnits that reflect your work
-15. When all testing is done, Create a pull request, use the following tutorial: https://help.github.com/articles/creating-a-pull-request/
-
-- Attention: Please recheck that in your pull request you send only your changes, and no other changes.
-- Check it by using the command:
+[NOTE]
+====
+Please be sure that your pull request sends only your changes, and no others. Check it using the command:
 
 [source]
--------------------------------------
 git diff new_branch upstream/master
--------------------------------------
+====
+
+// end::contribute[]
