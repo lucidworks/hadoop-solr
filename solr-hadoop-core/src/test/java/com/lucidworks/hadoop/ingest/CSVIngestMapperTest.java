@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -52,7 +54,8 @@ public class CSVIngestMapperTest extends BaseIngestMapperTestCase {
   public void test() throws Exception {
     Configuration conf = mapDriver.getConfiguration();
     conf.set(CSVIngestMapper.CSV_IGNORE_FIRST_LINE_COMMENT, "true");
-    conf.set(CSVIngestMapper.CSV_DELIMITER, ",");
+    byte[] delimiterBase64 = Base64.encodeBase64(",".getBytes());
+    conf.set(CSVIngestMapper.CSV_DELIMITER, new String(delimiterBase64));
     conf.set(CSVIngestMapper.CSV_FIELD_MAPPING, "0=id,1=bar, 2=junk , 3 = zen ,   4 = hockey");
 
     LongWritable key = new LongWritable(0);// should be skipped
@@ -75,11 +78,37 @@ public class CSVIngestMapperTest extends BaseIngestMapperTestCase {
   }
 
   @Test
+  public void testLWS592() throws Exception {
+    Configuration conf = mapDriver.getConfiguration();
+    conf.set(CSVIngestMapper.CSV_IGNORE_FIRST_LINE_COMMENT, "true");
+    byte[] delimiterBase64 = Base64.encodeBase64("\u0001".getBytes());
+
+    conf.set(CSVIngestMapper.CSV_DELIMITER, new String(delimiterBase64));
+    conf.set(CSVIngestMapper.CSV_FIELD_MAPPING, "0=id,1=bar,2=junk");
+
+    LongWritable key = new LongWritable(0);
+    Text value = new Text("idbarjunk"); // values with ctrl + A as delimiters
+
+    mapDriver.withInput(key, value);
+    mapDriver.runTest();
+    assertEquals("Should be 0 documents", 0,
+      mapDriver.getCounters().findCounter(BaseHadoopIngest.Counters.DOCS_ADDED).getValue());
+    key = new LongWritable(1);
+    value = new Text("id-1The quick brown foxhead"); // values with ctrl + A as delimiters
+    mapDriver.withInput(key, value);
+    mapDriver.withCounter(BaseHadoopIngest.Counters.DOCS_ADDED, 1);
+    LWDocumentWritable val = TestUtils.createLWDocumentWritable("id-1", "bar", "The quick brown fox", "junk", "head");
+    mapDriver.withOutput(new Text("id-1"), val);
+    mapDriver.runTest();
+  }
+
+  @Test
   public void testDefaultFieldID() throws Exception {
 
     Configuration conf = mapDriver.getConfiguration();
     conf.set(CSVIngestMapper.CSV_IGNORE_FIRST_LINE_COMMENT, "true");
-    conf.set(CSVIngestMapper.CSV_DELIMITER, ",");
+    byte[] delimiterBase64 = Base64.encodeBase64(",".getBytes());
+    conf.set(CSVIngestMapper.CSV_DELIMITER, new String(delimiterBase64));
     // The "id" is in a different position
     conf.set(CSVIngestMapper.CSV_FIELD_MAPPING, "0=bar, 1=id, 2=junk, 3=zen, 4 = hockey");
 
@@ -107,7 +136,8 @@ public class CSVIngestMapperTest extends BaseIngestMapperTestCase {
 
     Configuration conf = mapDriver.getConfiguration();
     conf.set(CSVIngestMapper.CSV_IGNORE_FIRST_LINE_COMMENT, "true");
-    conf.set(CSVIngestMapper.CSV_DELIMITER, ",");
+    byte[] delimiterBase64 = Base64.encodeBase64(",".getBytes());
+    conf.set(CSVIngestMapper.CSV_DELIMITER, new String(delimiterBase64));
     // The "id" is in a different position and has a diferent name my-id
     conf.set(CSVIngestMapper.CSV_FIELD_MAPPING, "0=bar, 1=junk, 2=my-id, 3=zen, 4 = hockey");
     // Set the field id
@@ -136,7 +166,8 @@ public class CSVIngestMapperTest extends BaseIngestMapperTestCase {
 
     Configuration conf = mapDriver.getConfiguration();
     conf.set(CSVIngestMapper.CSV_IGNORE_FIRST_LINE_COMMENT, "true");
-    conf.set(CSVIngestMapper.CSV_DELIMITER, ",");
+    byte[] delimiterBase64 = Base64.encodeBase64(",".getBytes());
+    conf.set(CSVIngestMapper.CSV_DELIMITER, new String(delimiterBase64));
     // The "id" is in a different position
     conf.set(CSVIngestMapper.CSV_FIELD_MAPPING, "0=bar, 1=id, 2=junk, 3=zen, 4 = hockey");
     // Set another field to be the id
@@ -166,7 +197,8 @@ public class CSVIngestMapperTest extends BaseIngestMapperTestCase {
 
     Configuration conf = mapDriver.getConfiguration();
     conf.set(CSVIngestMapper.CSV_FIELD_MAPPING, "0=id,1=bar, 2=junk , 3 = zen ,   4 = hockey");
-    conf.set(CSVIngestMapper.CSV_DELIMITER, "|");
+    byte[] delimiterBase64 = Base64.encodeBase64("|".getBytes());
+    conf.set(CSVIngestMapper.CSV_DELIMITER, new String(delimiterBase64));
     conf.set(CSVIngestMapper.CSV_IGNORE_FIRST_LINE_COMMENT, "false");
 
     LongWritable key = new LongWritable(0);// not skipped

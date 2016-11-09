@@ -61,6 +61,7 @@ public class IngestJobInit extends SolrCloudClusterSupport {
 
   @Before
   public void setUp() throws Exception {
+    conf.clear();
     removeAllDocs();
     clearOutput();
   }

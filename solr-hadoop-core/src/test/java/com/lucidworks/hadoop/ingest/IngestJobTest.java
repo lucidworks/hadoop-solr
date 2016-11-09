@@ -3,6 +3,7 @@ package com.lucidworks.hadoop.ingest;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
+import com.lucidworks.hadoop.io.LWDocumentWritable;
 import com.lucidworks.hadoop.io.LWMapRedOutputFormat;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.JobArgs;
@@ -16,6 +17,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +50,6 @@ public class IngestJobTest extends IngestJobInit {
                                    "csvFirstLineComment[true]")
                                  .getJobArgs();
 
-    // TODO: ToolRunner has some problems with exiting, so this may cause conflicts
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     verifyJob(jobName, 2, null);
@@ -120,6 +122,31 @@ public class IngestJobTest extends IngestJobInit {
     verifyJob(jobName, 6, new String[]{"test0.pdf", "test1.doc", "test0.doc", "test3.pdf", "test2.pdf", "test1.pdf"});
   }
 
+  @Test
+  public void testCSVLWS592() throws Exception {
+    String csv = "csv/LWS592.csv";
+    File csvFile = new File(ClassLoader.getSystemClassLoader().getResource(csv).getPath());
+    assertTrue(csv + " does not exist: " + csvFile.getAbsolutePath(), csvFile.exists());
+
+    Path input = new Path(tempDir, csv);
+    addContentToFS(input, Files.toString(csvFile, Charsets.UTF_8));
+
+    String jobName = "testCSVLWS592";
+
+    String[] args = new JobArgs().withJobName(jobName)
+                                 .withClassname(CSVIngestMapper.class.getName())
+                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+                                 .withInput(input.toUri().toString())
+                                 .withConf("csvFieldMapping[0=id,1=name_s,2=place_s];" +
+                                   "csvFirstLineComment[false]")
+                                 .withDArgs("-DcsvDelimiter=\u0001")
+                                 .getJobArgs();
+
+    System.err.println(Arrays.toString(args));
+    int val = ToolRunner.run(conf, new IngestJob(), args);
+    assertEquals(0, val);
+    verifyJob(jobName, 2, new String[]{"2"});
+  }
 
   @Test
   public void testCSVquoteswithCircumflex() throws Exception {
@@ -259,7 +286,6 @@ public class IngestJobTest extends IngestJobInit {
     assertEquals(4000, mockRecordWriter.map.size());
   }
 
-  @Ignore
   @Test
   public void testReducer() throws Exception {
     Path input = new Path(tempDir, "reducer.csv");
@@ -283,7 +309,7 @@ public class IngestJobTest extends IngestJobInit {
     conf.set("io.serializations", "com.lucidworks.hadoop.io.impl.LWMockSerealization");
     conf.set("io.sort.mb", "1");
     ToolRunner.run(conf, new IngestJob(), args);
-    verifyJob(jobName, 2, new String[]{"id-1", "id-2"}, "hockey", "field_5");
+    verifyJob(jobName, 2, null, "hockey", "field_5");
   }
 
   @Test
