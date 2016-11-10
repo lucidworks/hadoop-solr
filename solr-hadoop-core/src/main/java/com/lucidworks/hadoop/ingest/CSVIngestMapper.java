@@ -1,6 +1,8 @@
 package com.lucidworks.hadoop.ingest;
 
 import com.lucidworks.hadoop.io.LWDocument;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.apache.hadoop.conf.Configuration;
@@ -46,6 +48,8 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
       if (!override) {
         conf.setInputFormat(TextInputFormat.class);
       }// else the user has overridden the input format and we assume it is OK.
+      byte[] delimiterBase64 = Base64.encodeBase64(conf.get(CSV_DELIMITER, "").getBytes());
+      conf.set(CSV_DELIMITER, new String(delimiterBase64));
     }
   };
 
@@ -65,9 +69,14 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
     }
     ignoreFirstLine = Boolean.parseBoolean(conf.get(CSV_IGNORE_FIRST_LINE_COMMENT, "false"));
     String delimiterStr = conf.get(CSV_DELIMITER);
-    // we get a string, but we only use the first character, as delimiters must
-    // be a 'char'
+    if (delimiterStr != null) {
+      byte[] delimiterBase64 = Base64.decodeBase64(delimiterStr.getBytes());
+      delimiterStr = new String(delimiterBase64);
+    }
+
+    // we get a string, but we only use the first character, as delimiters must be a 'char'
     String fieldMapStr = conf.get(CSV_FIELD_MAPPING);
+
     if (fieldMapStr == null) {
       log.warn("No field mapping specified, mapping to generic names, i.e. field_1, field_2, etc");
       fieldMap = Collections.emptyMap();
