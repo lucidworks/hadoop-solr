@@ -63,13 +63,26 @@ You can use the https://help.github.com/articles/generating-an-ssh-key/[Generati
 
 The job jar allows you to index many different types of content stored in HDFS to Solr. It uses MapReduce to leverage the scaling qualities of http://hadoop.apache.org[Apache Hadoop] while indexing content to Solr.
 
-IMPORTANT: The job jar can be run from any location in your Hadoop cluster, but requires a Hadoop client if used on a server where Hadoop (`bin/hadoop)`) is not installed. The client allows the job jar to to submit the job to Hadoop. The name and availability of a client will vary depending on the Hadoop distribution vendor. See your vendor for more information about how to download a client and configure it if you need one.
+To use the job jar, you will need to initiate a job in your Hadoop cluster (using the `hadoop jar` command). Additional parameters (_arguments_) will be required. These arguments define the location of your data, how to parse your content, and the location of your Solr instance for indexing.
 
-The job jar uses _ingest mappers_ to parse documents and prepare them to be added to a Solr index. The selection of the ingest mapper is one of the arguments provided to the job when it is started. Details of the available ingest mappers are included in the section <<Ingest Mappers>>.
+The job jar takes three types of arguments. These must be defined in the proper order, as shown below:
+
+* the main class
+* system and mapper-specific arguments
+* key-value pair arguments
+
+These are discussed in more detail in the section <<Job Jar Arguments>> below.
+
+[IMPORTANT]
+====
+The job jar can be run from any location, but requires a Hadoop client if used on a server where Hadoop (`bin/hadoop`) is not installed. A properly configured client allows the job jar to be submitted to Hadoop to run the job.
+
+The specific client you need will vary depending on the Hadoop distribution vendor. Speak to your vendor for more information about how to download and configure a client for your distribution.
+====
 
 === How it Works
 
-The job jar consists of a series of MapReduce-enabled jobs to convert raw content into documents for indexing to Solr.
+The job jar runs a series of MapReduce-enabled jobs to convert raw content into documents for indexing to Solr.
 
 WARNING: You must use the job jar with a user that has permissions to write to the `hadoop.tmp.dir`. The `/tmp` directory in HDFS must also be writable.
 
@@ -79,6 +92,8 @@ The Hadoop job jar works in three stages designed to take in raw content and out
 .. If the source files are available in a shared Hadoop filesystem, prepare a list of source files and their locations as a SequenceFile. The raw contents of each file are not processed until step 2.
 .. If the source files are not available, prepare a list of source files and the raw content. This process is done sequentially and can take a significant amount of time if there are a large number of documents and/or if they are very large.
 . Run a MapReduce job to extract text and metadata from the raw content.
+** This process uses _ingest mappers_ to parse documents and prepare them to be added to a Solr index. The section <<Ingest Mappers>> below provides a list of available mappers.
+** Apache Tika can also be used for additional document parsing and metadata extraction.
 . Run a MapReduce job to send the extracted content from HDFS to Solr using the SolrJ client. This implementation works with SolrJ's CloudServer Java client which is aware of where Solr is running via Zookeeper.
 
 NOTE: Incremental indexing, where only changes to a document or directory are processed on successive job jar runs, is not supported. All three steps will be completed each time the job jar is run, regardless of whether the original content has changed.
@@ -101,10 +116,7 @@ There are several available ingest mappers:
 * WarcIngestMapper
 * ZipIngestMapper
 
-The ingest mapper is added to the job arguments with the use of the `-cls` parameter. However, many mappers require additional arguments. Please refer to the documentation for each mapper for the arguments.
-
-More details can be found in the wiki page https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments].
-
+The ingest mapper is added to the job arguments with the use of the `-cls` parameter. However, many mappers require additional arguments. Please refer to the the wiki page https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments] for each mapper for the required and optional arguments.
 // end::ingest-mappers[]
 
 // tag::job-jar-args[]
@@ -133,9 +145,11 @@ The main class must be specified. For all of the mappers available, it is *alway
 
 System or Mapper-specific arguments, defined with a pattern of `-Dargument=value`, are supplied after the class name. In many cases, the arguments chosen depend on the ingest mapper chosen. The ingest mapper will be defined later in the argument string.
 
+The order of system-level or mapper-specific arguments does not matter, but they must be after the class name and before the key-value pair arguments.
+
 For available system arguments, see https://github.com/lucidworks/hadoop-solr/wiki/SystemArguments[System Arguments].
 
-For ingest mapper argument, see https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments].
+For ingest mapper arguments, see https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments].
 
 Other arguments not described in this repo's documentation (such as Hadoop-specific system arguments) can be supplied as needed and they will be added to the Hadoop configuration. These arguments should be defined with the `-Dargument=value` syntax.
 // end::mapper-args[]
@@ -151,7 +165,7 @@ For more information see https://github.com/lucidworks/hadoop-solr/wiki/KeyValue
 // tag::example[]
 === Example Job
 
-This is a simple job request which demonstrates the order of the arguments:
+This is a simple job request to index a CSV file which demonstrates the order of the arguments:
 
 [source,bash,subs="verbatim,attributes"]
 ----
@@ -174,7 +188,7 @@ We can summarize the proper order as follows:
 // end::how-to-use[]
 
 // tag::contribute[]
-== How to contribute
+== How to Contribute
 
 . Fork this repo i.e. <username|organization>/hadoop-solr, following the http://help.github.com/fork-a-repo/[fork a repo/] tutorial. Then, clone the forked repo on your local machine:
 +
