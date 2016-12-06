@@ -5,6 +5,17 @@
 
 This project includes tools to build a Hadoop job jar that can index documents from HDFS to Solr.
 
+== Contents
+
+* <<Features>>
+* <<Build the Jars>>
+* <<Using the Job Jar>>
+** <<Job Jar Arguments>>
+** <<Example Job>>
+* <<Ingest Mappers>>
+* <<How it Works>>
+* <<How to Contribute>>
+
 == Features
 
 * Uses MapReduce to process large content sets.
@@ -19,7 +30,7 @@ Supported versions:
 See the wiki page https://github.com/lucidworks/hadoop-solr/wiki/TestedDistros[Tested Distros] for more details on Hadoop distributions tested with this job jar.
 
 // tag::build[]
-== How to Build
+== Build the Jars
 
 This repository uses Gradle to build the job jar. It is _not required_ to have Gradle installed before starting the build process.
 
@@ -59,7 +70,7 @@ You can use the https://help.github.com/articles/generating-an-ssh-key/[Generati
 // end::build[]
 
 // tag::how-to-use[]
-== How to Use
+== Using the Job Jar
 
 The job jar allows you to index many different types of content stored in HDFS to Solr. It uses MapReduce to leverage the scaling qualities of http://hadoop.apache.org[Apache Hadoop] while indexing content to Solr.
 
@@ -80,47 +91,8 @@ The job jar can be run from any location, but requires a Hadoop client if used o
 The specific client you need will vary depending on the Hadoop distribution vendor. Speak to your vendor for more information about how to download and configure a client for your distribution.
 ====
 
-=== How it Works
-
-The job jar runs a series of MapReduce-enabled jobs to convert raw content into documents for indexing to Solr.
-
-WARNING: You must use the job jar with a user that has permissions to write to the `hadoop.tmp.dir`. The `/tmp` directory in HDFS must also be writable.
-
-The Hadoop job jar works in three stages designed to take in raw content and output results to Solr. These stages are:
-
-. Create one or more SequenceFiles from the raw content. This is done in one of two ways:
-.. If the source files are available in a shared Hadoop filesystem, prepare a list of source files and their locations as a SequenceFile. The raw contents of each file are not processed until step 2.
-.. If the source files are not available, prepare a list of source files and the raw content. This process is done sequentially and can take a significant amount of time if there are a large number of documents and/or if they are very large.
-. Run a MapReduce job to extract text and metadata from the raw content.
-** This process uses _ingest mappers_ to parse documents and prepare them to be added to a Solr index. The section <<Ingest Mappers>> below provides a list of available mappers.
-** Apache Tika can also be used for additional document parsing and metadata extraction.
-. Run a MapReduce job to send the extracted content from HDFS to Solr using the SolrJ client. This implementation works with SolrJ's CloudServer Java client which is aware of where Solr is running via Zookeeper.
-
-NOTE: Incremental indexing, where only changes to a document or directory are processed on successive job jar runs, is not supported. All three steps will be completed each time the job jar is run, regardless of whether the original content has changed.
-
-The first step of the process converts the input content into a SequenceFile. In order to do this, the entire contents of that file must be read into memory so that it can be written out as a LWDocument in the SequenceFile. Thus, you should be careful to ensure that the system does not load into memory a file that is larger than the Java heap size of the process.
-
-// tag::ingest-mappers[]
-== Ingest Mappers
-Ingest mappers in the job jar parse documents and prepare them for indexing to Solr.
-
-There are several available ingest mappers:
-
-* CSVIngestMapper
-* DirectoryIngestMapper
-* GrokIngestMapper
-* RegexIngestMapper
-* SequenceFileIngestMapper
-* SolrXMLIngestMapper
-* XMLIngestMapper
-* WarcIngestMapper
-* ZipIngestMapper
-
-The ingest mapper is added to the job arguments with the use of the `-cls` parameter. However, many mappers require additional arguments. Please refer to the the wiki page https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments] for each mapper for the required and optional arguments.
-// end::ingest-mappers[]
-
 // tag::job-jar-args[]
-== Job Jar Arguments
+=== Job Jar Arguments
 
 The job jar arguments allow you to define the type of content in HDFS, choose the ingest mappers appropriate for that content, and set other job parameters as needed.
 
@@ -135,13 +107,13 @@ WARNING: The arguments must be supplied in the above order.
 The available arguments and parameters are described in the following sections.
 
 // tag::main-class[]
-=== Main Class
+==== Main Class
 
 The main class must be specified. For all of the mappers available, it is *always* defined as `com.lucidworks.hadoop.ingest.IngestJob`.
 // end::main-class[]
 
 // tag::mapper-args[]
-=== System and Mapper-specific Arguments
+==== System and Mapper-specific Arguments
 
 System or Mapper-specific arguments, defined with a pattern of `-Dargument=value`, are supplied after the class name. In many cases, the arguments chosen depend on the ingest mapper chosen. The ingest mapper will be defined later in the argument string.
 
@@ -155,7 +127,7 @@ Other arguments not described in this repo's documentation (such as Hadoop-speci
 // end::mapper-args[]
 
 // tag::key-value-pairs[]
-=== Key-Value Pair Arguments
+==== Key-Value Pair Arguments
 Key-value pair arguments apply to the ingest job generally. These arguments are expressed as `-argument value`. They are the last arguments supplied before the jar name is defined.
 
 For more information see https://github.com/lucidworks/hadoop-solr/wiki/KeyValuePairArguments[Key-Value Pair Arguments].
@@ -185,7 +157,48 @@ We can summarize the proper order as follows:
 <3> Mapper arguments, which vary depending on the Mapper class chosen, in the format of `-Dargument=value`.
 <4> Key-value arguments, which include the ingest mapper, Solr collection name, and other parameters, in the format of `-argument value`.
 // end::example[]
+
+// tag::ingest-mappers[]
+== Ingest Mappers
+Ingest mappers in the job jar parse documents and prepare them for indexing to Solr.
+
+There are several available ingest mappers:
+
+* CSVIngestMapper
+* DirectoryIngestMapper
+* GrokIngestMapper
+* RegexIngestMapper
+* SequenceFileIngestMapper
+* SolrXMLIngestMapper
+* XMLIngestMapper
+* WarcIngestMapper
+* ZipIngestMapper
+
+The ingest mapper is added to the job arguments with the use of the `-cls` parameter. However, many mappers require additional arguments. Please refer to the the wiki page https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments] for each mapper for the required and optional arguments.
+// end::ingest-mappers[]
+
+
 // end::how-to-use[]
+
+== How it Works
+
+The job jar runs a series of MapReduce-enabled jobs to convert raw content into documents for indexing to Solr.
+
+WARNING: You must use the job jar with a user that has permissions to write to the `hadoop.tmp.dir`. The `/tmp` directory in HDFS must also be writable.
+
+The Hadoop job jar works in three stages designed to take in raw content and output results to Solr. These stages are:
+
+. Create one or more SequenceFiles from the raw content. This is done in one of two ways:
+.. If the source files are available in a shared Hadoop filesystem, prepare a list of source files and their locations as a SequenceFile. The raw contents of each file are not processed until step 2.
+.. If the source files are not available, prepare a list of source files and the raw content. This process is done sequentially and can take a significant amount of time if there are a large number of documents and/or if they are very large.
+. Run a MapReduce job to extract text and metadata from the raw content.
+** This process uses _ingest mappers_ to parse documents and prepare them to be added to a Solr index. The section <<Ingest Mappers>> below provides a list of available mappers.
+** Apache Tika can also be used for additional document parsing and metadata extraction.
+. Run a MapReduce job to send the extracted content from HDFS to Solr using the SolrJ client. This implementation works with SolrJ's CloudServer Java client which is aware of where Solr is running via Zookeeper.
+
+NOTE: Incremental indexing, where only changes to a document or directory are processed on successive job jar runs, is not supported. All three steps will be completed each time the job jar is run, regardless of whether the original content has changed.
+
+The first step of the process converts the input content into a SequenceFile. In order to do this, the entire contents of that file must be read into memory so that it can be written out as a LWDocument in the SequenceFile. Thus, you should be careful to ensure that the system does not load into memory a file that is larger than the Java heap size of the process.
 
 // tag::contribute[]
 == How to Contribute
