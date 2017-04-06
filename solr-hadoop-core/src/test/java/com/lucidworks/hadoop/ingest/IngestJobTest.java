@@ -2,13 +2,10 @@ package com.lucidworks.hadoop.ingest;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-
-import com.lucidworks.hadoop.io.LWDocumentWritable;
 import com.lucidworks.hadoop.io.LWMapRedOutputFormat;
 import com.lucidworks.hadoop.utils.IngestJobMockMapRedOutFormat;
 import com.lucidworks.hadoop.utils.JobArgs;
 import com.lucidworks.hadoop.utils.MockRecordWriter;
-
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.util.ToolRunner;
@@ -18,7 +15,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,18 +33,18 @@ public class IngestJobTest extends IngestJobInit {
     Path input = new Path(tempDir, "foo.csv");
     StringBuilder buffer = new StringBuilder("id,bar,junk,zen,hockey");
     buffer.append(lineSep).append("id-1, The quick brown fox, jumped, " + "head, gretzky, extra").append(lineSep)
-          .append("id-2, The quick red fox, kicked, head," + " gretzky");
+        .append("id-2, The quick red fox, kicked, head," + " gretzky");
 
     addContentToFS(input, buffer.toString());
 
     String jobName = "testCsv";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString())
-                                 .withConf("csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id];" +
-                                   "csvFirstLineComment[true]")
-                                 .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString())
+        .withConf("csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id];" +
+            "csvFirstLineComment[true]")
+        .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
@@ -57,9 +53,9 @@ public class IngestJobTest extends IngestJobInit {
     jobName = "testCsv2";
 
     args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                        .withInput(input.toUri().toString())
-                        .withConf("csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]").getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString())
+        .withConf("csvFieldMapping[0=id,1=bar, 2=junk , 3 = zen ,4 = hockey];idField[id]").getJobArgs();
 
     ToolRunner.run(conf, new IngestJob(), args);
     verifyJob(jobName, 3, null);
@@ -67,10 +63,10 @@ public class IngestJobTest extends IngestJobInit {
     jobName = "testCsvFieldId";
     // id Field is the the field called "junk"
     args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                        .withInput(input.toUri().toString())
-                        .withConf("csvFieldMapping[0=bar, 1=id, 2=junk , 3 = zen ,4 = hockey];idField[junk]")
-                        .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString())
+        .withConf("csvFieldMapping[0=bar, 1=id, 2=junk , 3 = zen ,4 = hockey];idField[junk]")
+        .getJobArgs();
 
     ToolRunner.run(conf, new IngestJob(), args);
     verifyJob(jobName, 3, null);
@@ -92,8 +88,8 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testDirectoy";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(DirectoryIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString() + "/*").getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString() + "/*").getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
@@ -114,8 +110,8 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testZip";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(ZipIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString()).getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
@@ -134,13 +130,13 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testCSVLWS592";
 
     String[] args = new JobArgs().withJobName(jobName)
-                                 .withClassname(CSVIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString())
-                                 .withConf("csvFieldMapping[0=id,1=name_s,2=place_s];" +
-                                   "csvFirstLineComment[false]")
-                                 .withDArgs("-DcsvDelimiter=\u0001")
-                                 .getJobArgs();
+        .withClassname(CSVIngestMapper.class.getName())
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString())
+        .withConf("csvFieldMapping[0=id,1=name_s,2=place_s];" +
+            "csvFirstLineComment[false]")
+        .withDArgs("-DcsvDelimiter=\u0001")
+        .getJobArgs();
 
     System.err.println(Arrays.toString(args));
     int val = ToolRunner.run(conf, new IngestJob(), args);
@@ -160,10 +156,10 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testCSVquoteswithCircumflex";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString())
-                                 .withConf("csvDelimiter[^];csvFieldMapping[0=id,1=name_s];csvFirstLineComment[false]")
-                                 .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString())
+        .withConf("csvDelimiter[^];csvFieldMapping[0=id,1=name_s];csvFirstLineComment[false]")
+        .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
@@ -181,13 +177,13 @@ public class IngestJobTest extends IngestJobInit {
 
     String jobName = "testWarc";
     String[] args = new JobArgs().withJobName(jobName).withClassname(WarcIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString()).getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     verifyJob(jobName, 3, new String[]{"<urn:uuid:b328f1fe-b2ee-45c0-9139-908850810b52>",
-      "<urn:uuid:6ee9accb-a284-47ef-8785-ed28aee2f79e>"}, "warc.WARC-Target-URI", "warc.WARC-Warcinfo-ID");
+        "<urn:uuid:6ee9accb-a284-47ef-8785-ed28aee2f79e>"}, "warc.WARC-Target-URI", "warc.WARC-Warcinfo-ID");
   }
 
   @Test
@@ -201,8 +197,8 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testSolrXML";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(SolrXMLIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString()).getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).getJobArgs();
 
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
@@ -221,8 +217,8 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testSequenceFile";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(SequenceFileIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString()).getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
@@ -246,12 +242,12 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testRegex";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(RegexIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(tempDir.toUri().toString() + File.separator + "regex" + File.separator +
-                                   "regex-small*")
-                                 .withDArgs("-D" + RegexIngestMapper.REGEX + "=\\w+", "-D" + RegexIngestMapper
-                                   .GROUPS_TO_FIELDS + "=0=match")
-                                 .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(tempDir.toUri().toString() + File.separator + "regex" + File.separator +
+            "regex-small*")
+        .withDArgs("-D" + RegexIngestMapper.REGEX + "=\\w+", "-D" + RegexIngestMapper
+            .GROUPS_TO_FIELDS + "=0=match")
+        .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
@@ -276,9 +272,9 @@ public class IngestJobTest extends IngestJobInit {
     String jobName = "testGrok";
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(GrokIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString()).withDArgs("-Dgrok.uri=" + grokConfFile)
-                                 .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).withDArgs("-Dgrok.uri=" + grokConfFile)
+        .getJobArgs();
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);
     MockRecordWriter mockRecordWriter = IngestJobMockMapRedOutFormat.writers.get(jobName);
@@ -291,19 +287,19 @@ public class IngestJobTest extends IngestJobInit {
     Path input = new Path(tempDir, "reducer.csv");
     StringBuilder buffer = new StringBuilder("id,bar,junk,zen,hockey");
     buffer.append(lineSep).append("id-1, The quick brown fox, jumped, " + "head, gretzky, extra").append(lineSep)
-          .append("id-2, The quick red fox, kicked, head," +
+        .append("id-2, The quick red fox, kicked, head," +
             "" + " gretzky");
 
     addContentToFS(input, buffer.toString());
 
     String jobName = "testCsvReducers";
     String[] args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString()).withReducersClass(IngestReducer.class.getName())
-                                 .withReducersAmount("3")
-                                 .withConf("csvFieldMapping[0=id," + "1=bar, 2=junk , 3 = zen ,4 = hockey];" +
-                                   "idField[id];csvFirstLineComment[true]")
-                                 .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).withReducersClass(IngestReducer.class.getName())
+        .withReducersAmount("3")
+        .withConf("csvFieldMapping[0=id," + "1=bar, 2=junk , 3 = zen ,4 = hockey];" +
+            "idField[id];csvFirstLineComment[true]")
+        .getJobArgs();
 
 
     conf.set("io.serializations", "com.lucidworks.hadoop.io.impl.LWMockSerealization");
@@ -316,8 +312,8 @@ public class IngestJobTest extends IngestJobInit {
   public void testBadArgs() throws Exception {
     String jobName = "testDidnotIngetAnyDocs";
     String[] args = new JobArgs().withJobName(jobName).withClassname(DirectoryIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(tempDir.toUri().toString()).getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(tempDir.toUri().toString()).getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -326,14 +322,14 @@ public class IngestJobTest extends IngestJobInit {
     Path input = new Path(tempDir, "foo.csv");
     StringBuilder buffer = new StringBuilder("id,bar,junk,zen,hockey");
     buffer.append(lineSep).append("id-1, The quick brown fox, jumped, " + "head, gretzky, extra").append(lineSep)
-          .append("id-2, The quick red fox, kicked, head," + " gretzky");
+        .append("id-2, The quick red fox, kicked, head," + " gretzky");
 
     addContentToFS(input, buffer.toString());
 
     jobName = "testBadMapper";
     // foo -> bad mapper option
     args = new JobArgs().withJobName(jobName).withClassname("foo").withCollection(DEFAULT_COLLECTION)
-                        .withZkString(getBaseUrl()).withInput(input.toUri().toString()).getJobArgs();
+        .withZkString(getBaseUrl()).withInput(input.toUri().toString()).getJobArgs();
 
     val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -344,9 +340,9 @@ public class IngestJobTest extends IngestJobInit {
     String invalidSolrConnection = getBaseUrl() + "+1";
 
     args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                        .withCollection(DEFAULT_COLLECTION).withZkString(invalidSolrConnection)
-                        .withInput(input.toUri().toString()).withOutputFormat(LWMapRedOutputFormat.class.getName())
-                        .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(invalidSolrConnection)
+        .withInput(input.toUri().toString()).withOutputFormat(LWMapRedOutputFormat.class.getName())
+        .getJobArgs();
 
     val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -355,9 +351,9 @@ public class IngestJobTest extends IngestJobInit {
     jobName = "testBadReducer";
 
     args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                        .withInput(input.toUri().toString()).withReducersClass("foo").withReducersAmount("3")
-                        .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).withReducersClass("foo").withReducersAmount("3")
+        .getJobArgs();
 
     val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -365,8 +361,8 @@ public class IngestJobTest extends IngestJobInit {
 
     jobName = "testNoZKorS";
     args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                        .withCollection(DEFAULT_COLLECTION).withInput(input.toUri().toString())
-                        .withOutputFormat(LWMapRedOutputFormat.class.getName()).getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withInput(input.toUri().toString())
+        .withOutputFormat(LWMapRedOutputFormat.class.getName()).getJobArgs();
 
     val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -388,16 +384,16 @@ public class IngestJobTest extends IngestJobInit {
     Path input = new Path(tempDir, "foo.csv");
     StringBuilder buffer = new StringBuilder("id,bar,junk,zen,hockey");
     buffer.append(lineSep).append("id-1, The quick brown fox, jumped, " + "head, gretzky, extra").append(lineSep)
-          .append("id-2, The quick red fox, kicked, head," +
+        .append("id-2, The quick red fox, kicked, head," +
             "" + " gretzky");
 
     addContentToFS(input, buffer.toString());
 
     String[] args = new JobArgs().withJobName(jobName).withClassname(CSVIngestMapper.class.getName())
-                                 .withCollection("INVALID-COLLECTION").withZkString(invalidSolrConnection)
-                                 .withInput(input.toUri().toString())
-                                 .withConf("csvFieldMapping[0=id,1=bar, 2=junk " + ", 3 = zen ,4 = hockey];idField[id]")
-                                 .withOutputFormat(LWMapRedOutputFormat.class.getName()).getJobArgs();
+        .withCollection("INVALID-COLLECTION").withZkString(invalidSolrConnection)
+        .withInput(input.toUri().toString())
+        .withConf("csvFieldMapping[0=id,1=bar, 2=junk " + ", 3 = zen ,4 = hockey];idField[id]")
+        .withOutputFormat(LWMapRedOutputFormat.class.getName()).getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(1, val);
@@ -437,10 +433,10 @@ public class IngestJobTest extends IngestJobInit {
 
     String jobName = "testXml";
     String[] args = new JobArgs().withJobName(jobName).withClassname(XMLIngestMapper.class.getName())
-                                 .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
-                                 .withInput(input.toUri().toString()).withConf("lww.xslt[" + inputXsl + "];lww.xml" +
-        ".start[root]; lww.xml.end[root];lww.xml.docXPathExpr[//doc];lww.xml.includeParentAttrsPrefix[p_]")
-                                 .getJobArgs();
+        .withCollection(DEFAULT_COLLECTION).withZkString(getBaseUrl())
+        .withInput(input.toUri().toString()).withConf("lww.xslt[" + inputXsl + "];lww.xml" +
+            ".start[root]; lww.xml.end[root];lww.xml.docXPathExpr[//doc];lww.xml.includeParentAttrsPrefix[p_]")
+        .getJobArgs();
 
     int val = ToolRunner.run(conf, new IngestJob(), args);
     assertEquals(0, val);

@@ -7,11 +7,11 @@ buildscript {
 }
 
 plugins {
-  id 'com.github.johnrengelman.shadow' version '1.2.3'
+  id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.0'
+    gradleVersion = '3.4.1'
 }
 
 ext {

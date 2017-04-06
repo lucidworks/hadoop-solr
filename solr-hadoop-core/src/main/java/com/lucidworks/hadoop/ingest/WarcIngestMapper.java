@@ -32,7 +32,7 @@ public class WarcIngestMapper extends AbstractIngestMapper<LongWritable, Writabl
 
   @Override
   public LWDocument[] toDocuments(
-    LongWritable _,
+    LongWritable longWritable,
     WritableWarcRecord value,
     Reporter reporter,
     Configuration conf) throws IOException {
