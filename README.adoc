@@ -1,9 +1,20 @@
 :packageUser: solr
-:connectorVersion: 2.2.5
+:connectorVersion: 2.6.3
 
 = Hadoop Job Jar
 
 This project includes tools to build a Hadoop job jar that can index documents from HDFS to Solr.
+
+== Contents
+
+* <<Features>>
+* <<Build Jars>>
+* <<How it Works>>
+* <<Ingest Mappers>>
+* <<Using the Job Jar>>
+** <<Job Jar Arguments>>
+** <<Example Job>>
+* <<How to Contribute>>
 
 == Features
 
@@ -14,24 +25,14 @@ This project includes tools to build a Hadoop job jar that can index documents f
 Supported versions:
 
 * Solr 5.x
-* Hadoop 2.x
+* Hadoop 2.4 and higher
 
-// tag::distros[]
-Tested Hadoop Distributions:
-
-* Apache Hadoop
-** 2.7.x
-* Hortonworks
-** HDP 2.3 (Hadoop 2.7.x)
-** HDP 2.2 (Hadoop 2.6.x)
-** HDP 2.1 (Hadoop 2.4.x)
-* MapR
-** MapR 5.0 (Hadoop 2.7.x)
-** MapR 4.0.1 (Hadoop 2.4.x)
-// end::distros[]
+See the wiki page https://github.com/lucidworks/hadoop-solr/wiki/TestedDistros[Tested Distros] for more details on Hadoop distributions tested with this job jar.
 
 // tag::build[]
-== How to Build
+== Build Jars
+
+WARNING: You must use Java 8 or higher to build the .jar.
 
 This repository uses Gradle to build the job jar. It is _not required_ to have Gradle installed before starting the build process.
 
@@ -67,22 +68,13 @@ If GitHub + SSH is not configured the following exception will be thrown:
     fatal: clone of 'git@github.com:LucidWorks/solr-hadoop-common.git' into submodule path 'solr-hadoop-common' failed
 ----
 
-Use the next tutorial to fix the exception: https://help.github.com/articles/generating-an-ssh-key/
-
+You can use the https://help.github.com/articles/generating-an-ssh-key/[Generating an SSH Key] tutorial to fix the problem.
 // end::build[]
 
-// tag::how-to-use[]
-== How to Use
+// tag::how-it-works[]
+== How it Works
 
-The job jar allows you to index many different types of content stored in HDFS to Solr. It uses MapReduce to leverage the scaling qualities of http://hadoop.apache.org[Apache Hadoop] while indexing content to Solr.
-
-IMPORTANT: The job jar can be run from any location in your Hadoop cluster, but requires a Hadoop client if used on a server where Hadoop (`bin/hadoop)`) is not installed. The client allows the job jar to to submit the job to Hadoop. The name and availability of a client will vary depending on the Hadoop distribution vendor. See your vendor for more information about how to download a client and configure it if you need one.
-
-The job jar uses _ingest mappers_ to parse documents and prepare them to be added to a Solr index. The selection of the ingest mapper is one of the arguments provided to the job when it is started. Details of the available ingest mappers are included in the section <<Ingest Mappers>>.
-
-=== How it Works
-
-The job jar consists of a series of MapReduce-enabled jobs to convert raw content into documents for indexing to Solr.
+The job jar runs a series of MapReduce-enabled jobs to convert raw content into documents for indexing to Solr.
 
 WARNING: You must use the job jar with a user that has permissions to write to the `hadoop.tmp.dir`. The `/tmp` directory in HDFS must also be writable.
 
@@ -92,6 +84,8 @@ The Hadoop job jar works in three stages designed to take in raw content and out
 .. If the source files are available in a shared Hadoop filesystem, prepare a list of source files and their locations as a SequenceFile. The raw contents of each file are not processed until step 2.
 .. If the source files are not available, prepare a list of source files and the raw content. This process is done sequentially and can take a significant amount of time if there are a large number of documents and/or if they are very large.
 . Run a MapReduce job to extract text and metadata from the raw content.
+** This process uses _ingest mappers_ to parse documents and prepare them to be added to a Solr index. The section <<Ingest Mappers>> below provides a list of available mappers.
+** Apache Tika can also be used for additional document parsing and metadata extraction.
 . Run a MapReduce job to send the extracted content from HDFS to Solr using the SolrJ client. This implementation works with SolrJ's CloudServer Java client which is aware of where Solr is running via Zookeeper.
 
 NOTE: Incremental indexing, where only changes to a document or directory are processed on successive job jar runs, is not supported. All three steps will be completed each time the job jar is run, regardless of whether the original content has changed.
@@ -100,103 +94,50 @@ The first step of the process converts the input content into a SequenceFile. In
 
 // tag::ingest-mappers[]
 == Ingest Mappers
-
 Ingest mappers in the job jar parse documents and prepare them for indexing to Solr.
 
-When configuring the arguments for the job, selection of the correct ingest mapper is key to successful indexing of documents. In some cases, the choice of ingest mapper will determine the arguments you need to provide to the job jar.
+There are several available ingest mappers:
 
-The ingest mapper choice is passed to the job jar with the `-cls` argument. Available job jar arguments are described in detail in the section <<Job Jar Arguments>> below.
+* CSVIngestMapper
+* DirectoryIngestMapper
+* GrokIngestMapper
+* RegexIngestMapper
+* SequenceFileIngestMapper
+* SolrXMLIngestMapper
+* XMLIngestMapper
+* WarcIngestMapper
+* ZipIngestMapper
 
-There are several supported ingest mappers, described in detail below.
-
-=== CSV Ingest Mapper
-This ingest mapper allows you to index files in CSV format. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.CSVIngestMapper`.
-
-There are several additional arguments that can be supplied when using this ingest mapper. These are described in detail in the section <<csv,CSV Ingest Mapper Arguments>>. For reference, these are the additional arguments:
-
-* `csvDelimiter`: the character that is used to separate values for different fields.
-* `csvFieldMapping`: define default field mapping from column names to Solr fields.
-* `csvFirstLineComment`: declare that the first line of the document is a comment.
-* `idField`: the column to be used as the document ID.
-* `csvStrategy`: the format of the CSV file.
-
-_Supports_: TextInputFormat documents.
-
-=== Directory Ingest Mapper
-This ingest mapper allows you to index documents found in a defined directory. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.DirectoryIngestMapper`.
-
-There are no special arguments for this ingest mapper.
-
-When using this ingest mapper, you may want to also use Apache Tika to parse the files. See the `-Dlw.tika.process` parameter below for details on how to flag the job to use Apache Tika and add the required .jar.
-
-=== Grok Ingest Mapper
-This ingest mapper allows you to index log files based on a Logstash configuration file. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.GrokIngestMapper`.
-
-LogStash filters such as grok, kv, date, etc., and grok patterns such as ID and WORD are supported. More information about Grok is available at http://logstash.net/docs/1.4.0/filters/grok.
-
-During processing, any input and output statements in the configuration file will be ignored. The input will always be HDFS and the output will always be Solr.
-
-There is one additional argument for this ingest mapper, `grok.uri`, which defines the location of the Logstash configuration file, in either the local filesystem or HDFS. More details are in the section <<grok,Grok Ingest Mapper Arguments>>.
-
-_Supports_: TextInputFormat documents.
-
-=== RegEx Ingest Mapper
-This ingest mapper allows definition of a regular expression that is used on the incoming file to extract content. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.RegexIngestMapper`.
-
-The ingest mapper expects that the key and value produced by the InputFormat are both Writable. The regular expression is only applied to the value.
-
-There are three additional arguments that can be supplied with this ingest mapper, described in detail in the section <<regex, Regular Expression Ingest Mapper Arguments>>. For reference, these additional properties are:
-
-* `com.lucidworks.hadoop.ingest.RegexIngestMapper.regex`: define a regular expression.
-* `com.lucidworks.hadoop.ingest.RegexIngestMapper.groups_to_fields`: map fields between regex capture groups and field names.
-* `com.lucidworks.hadoop.ingest.RegexIngestMapper.match`: use Java's `match` method instead of `find`.
-
-=== SequenceFile Ingest Mapper
-This ingest mapper allows you to index a SequenceFile. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.SequenceFileIngestMapper`.
-
-If the type for the value of the key/value pair is "text", the string will be used, otherwise the raw bytes will be written.
-
-There are no special arguments for this ingest mapper.
-
-_Supports_: SequenceFileInputFormat documents.
-
-=== SolrXML Ingest Mapper
-This ingest mapper allows you to index a file in SolrXML format. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.SolrXMLIngestMapper`.
-
-The file should be in a SequenceFileInputFormat, where the key is any Writable and the value is text in SolrXML format. The default `inputFormat` of SequenceFileInputFormat can be overridden if required.
-
-This mapper requires that the `idField` parameter be set when creating the workflow job. For more details, see the section <<solr,SolrXML Ingest Mapper Arguments>>.
-
-Only "add" commands in the SolrXML will be processed. All other commands will be ignored.
-
-_Supports_: SequenceFileInputFormat documents.
-
-=== XML Ingest Mapper
-This ingest mapper allows you to index a file inXML format. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.XMLIngestMapper`.
-
-This mapper requires that the `docXPathExpr` parameter be set when creating the workflow job. For more details, see the section <<xml,XML Ingest Mapper Arguments>>.
-
-_Supports_: XMLInputFormat documents.
-
-=== WARC Ingest Mapper
-This ingest mapper allows you to index web archive (`.warc`) files in WarcFileInputFormat. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.WarcIngestMapper`.
-
-There are no special arguments for this ingest mapper.
-
-_Supports_: WarcFileInputFormat documents.
-
-=== Zip Ingest Mapper
-This ingest mapper allows you to index documents contained in `.zip` files. The class to use with the `-cls` argument is `com.lucidworks.hadoop.ingest.ZipIngestMapper`.
-
-There are no special arguments for this ingest mapper. However, when using this ingest mapper, you may want to also use Apache Tika to parse the files. See the `-Dlw.tika.process` parameter below for details on how to flag the job to use Apache Tika and add the required .jar.
-
-_Supports_: ZipFileInputFormat documents.
+The ingest mapper is added to the job arguments with the use of the `-cls` parameter. However, many mappers require additional arguments. Please refer to the the wiki page https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments] for each mapper for the required and optional arguments.
 // end::ingest-mappers[]
+// end::how-it-works[]
+
+// tag::how-to-use[]
+== Using the Job Jar
+
+The job jar allows you to index many different types of content stored in HDFS to Solr. It uses MapReduce to leverage the scaling qualities of http://hadoop.apache.org[Apache Hadoop] while indexing content to Solr.
+
+To use the job jar, you will need to initiate a job in your Hadoop cluster (using the `hadoop jar` command). Additional parameters (_arguments_) will be required. These arguments define the location of your data, how to parse your content, and the location of your Solr instance for indexing.
+
+The job jar takes three types of arguments. These must be defined in the proper order, as shown below:
+
+* the main class
+* system and mapper-specific arguments
+* key-value pair arguments
+
+These are discussed in more detail in the section <<Job Jar Arguments>> below.
+
+[IMPORTANT]
+====
+The job jar can be run from any location, but requires a Hadoop client if used on a server where Hadoop (`bin/hadoop`) is not installed. A properly configured client allows the job jar to be submitted to Hadoop to run the job.
+
+The specific client you need will vary depending on the Hadoop distribution vendor. Speak to your vendor for more information about how to download and configure a client for your distribution.
+====
 
 // tag::job-jar-args[]
-== Job Jar Arguments
+=== Job Jar Arguments
 
-The job jar arguments allow you to define the type of content in your Hadoop filesystem, choose the ingest mappers appropriate for that content, and set other job parameters as needed.
+The job jar arguments allow you to define the type of content in HDFS, choose the ingest mappers appropriate for that content, and set other job parameters as needed.
 
 There are three main sections to the job jar arguments:
 
@@ -204,210 +145,42 @@ There are three main sections to the job jar arguments:
 * system and mapper-specific arguments
 * key-value pair arguments
 
-WARNING: The arguments must be supplied in the above order.
+WARNING: The arguments *must* be supplied in the above order.
 
 The available arguments and parameters are described in the following sections.
 
 // tag::main-class[]
-=== Main Class
+==== Main Class
 
 The main class must be specified. For all of the mappers available, it is *always* defined as `com.lucidworks.hadoop.ingest.IngestJob`.
 // end::main-class[]
 
 // tag::mapper-args[]
-=== System and Mapper-specific Arguments
+==== System and Mapper-specific Arguments
 
 System or Mapper-specific arguments, defined with a pattern of `-Dargument=value`, are supplied after the class name. In many cases, the arguments chosen depend on the ingest mapper chosen. The ingest mapper will be defined later in the argument string.
 
-There are several possible arguments:
+The order of system-level or mapper-specific arguments does not matter, but they must be after the class name and before the key-value pair arguments.
 
-Ingest Behavior Arguments::
-`-Dlww.commit.on.close`:::
-Defines if a commit should be done when the connection to Solr is complete. Commits in Solr flush documents to disk instead of holding them in memory. A commit is required for the documents to be searchable. There are settings in Solr to perform automatic commits when the queue grows to a certain size (see https://cwiki.apache.org/confluence/display/solr/UpdateHandlers+in+SolrConfig[UpdateHandlers in SolrConfig] in the Apache Solr Reference Guide for more on commits).
-+
-_Default_: false.  _Required_: No.
+For available system arguments, see https://github.com/lucidworks/hadoop-solr/wiki/SystemArguments[System Arguments].
 
-`-Dadd.subdirectories`:::
-If true, the exploration of a folder will be recursive, meaning it will look for subdirectories to traverse for documents.
-+
-_Default_: false. _Required_: No.
+For ingest mapper arguments, see https://github.com/lucidworks/hadoop-solr/wiki/IngestMappers[Ingest Mapper Arguments].
 
-`-Dlw.tika.process`:::
-If true, Apache Tika will be used to parse files. This is most commonly needed when using the DirectoryIngestMapper or the ZipIngestMapper.
-+
-_Default_: false. _Required_: No.
-
-WARNING: If `-Dlw.tika.process` is set to true, the `{packageUser}-hadoop-tika-{connectorVersion}.jar` (including the path, if necessary) should be added to the job arguments with `-libjars` argument.
-
-
-[#csv]
-CSV Ingest Mapper Arguments::
-These arguments are used only when the CSVIngestMapper is chosen with the `-cls` property described in the section, <<Key-Value Pair Arguments>>, below.
-
-`-DcsvDelimiter`:::
-This is the file delimiter for CSV content.
-+
-_Default_: , (comma). _Required_: No.
-
-`-DcsvFieldMapping`:::
-This defines how to map columns in a CSV file to fields in Solr, in the format of `0=id`. The key is a zero-based column number (the first column is always "0", the second column is "1", etc.), and the value is the name of the field to use to store the value in Solr. If this is not set, column 0 is used as the id, unless there is a column named 'id'. See the `-DidField` argument below for more on the ID field rules.
-+
-_Default_: none. _Required_: No.
-
-`-DcsvFirstLineComment`:::
-If true, the first line in a CSV file will be interpreted as a comment out and will not be indexed.
-+
-_Default_: false. _Required_: No.
-
-`-DcsvStrategy`:::
-Defines the format of a CSV file. Three formats are supported:
-+
-* default: a CSV file that adheres to the http://tools.ietf.org/html/rfc4180[RFC-4180] standard.
-* excel: a CSV file exported from Microsoft Excel. This commonly uses a comma (,) as the field delimiter.
-* tdf: a tab-delimited CSV file. If you use the tdf strategy, you do not need to override the delimiter with the `-DcsvDelimiter` argument.
-+
-_Default_: default. _Required_: No.
-
-`-DidField`:::
-The column to be used as an ID. The field name used is the name after any mapping that occurs as a result of the `-DcsvFieldMapping` argument. If there is a column named 'id' and it is different from the field named with this property, you will get an error because you have defined two IDs and IDs must be unique.
-+
-This argument is not required when using the CSV Ingest Mapper, but is required when using the SolrXML Ingest Mapper.
-+
-_Default_: `none`. _Required_: No.
-
-[#grok]
-Grok Ingest Mapper Arguments::
-These arguments are used only when the GrokIngestMapper is chosen with the `-cls` property described in the section, <<Key-Value Pair Arguments>>, below.
-
-`-Dgrok.uri`:::
-The path to a Logstash configuration file, which can be in the local
-filesystem (`\file:///path/logStash.conf`) or in HDFS (`hdfs://path/logStash.conf`).
-+
-_Default_: none. _Required_: No.
-
-[#regex]
-Regular Expression Ingest Mapper Arguments::
-These arguments are used only when the RegexIngestMapper is chosen with the `-cls` property described in the section, <<Key-Value Pair Arguments>>, below.
-
-`-Dcom.lucidworks.hadoop.ingest.RegexIngestMapper.regex`:::
-A Java Pattern compliant Regex. See http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html[Pattern Javadocs] for more details. This property cannot be null or empty.
-+
-_Default_: none. _Required_: No.
-
-`-Dcom.lucidworks.hadoop.ingest.RegexIngestMapper.groups_to_fields`:::
-A comma-separated mapping (such as `key=value,key=value,...`) between regular expression capturing groups and field names. The key must be an integer and the value must be a String. For instance, 0=body,1=text. Any capturing group not represented in the map will not be added to the document.
-+
-_Default_: none. _Required_: No.
-
-`-Dcom.lucidworks.hadoop.ingest.RegexIngestMapper.match`:::
-If true, the mapper will use Java's  http://docs.oracle.com/javase/6/docs/api/java/util/regex/Matcher.html[Matcher class] `matches` method instead of the `find` method. This will require the regex to match  the entire string instead of part of the string.
-+
-_Default_: none. _Required_: No.
-
-[#solr]
-SolrXML Ingest Mapper Arguments::
-These arguments are used only when the SolrXMLIngestMapper is chosen with the `-cls` property described in the section, <<Key-Value Pair Arguments>>, below.
-
-`-DidField`:::
-The field in the XML document to be used as a unique document ID in the index.
-+
-This argument is required when using the SolrXML Ingest Mapper, but not required when using the CSV Ingest Mapper.
-+
-_Default_: `none`. _Required_: Yes.
-
-[#xml]
-Xml Ingest Mapper Arguments::
-These arguments are used only when the XMLIngestMapper is chosen with the `-cls` property described in the section, <<Key-Value Pair Arguments>>, below.
-
-`-Dlww.xslt`:::
-The path in hdfs to a xslt configuration file.
-+
-_Default_: `none`. _Required_: No.
-
-`-Dlww.xml.docXPathExpr`:::
-XMl XPath expressions for the document document.
-+
-_Default_: `\`. _Required_: Yes.
-
-`-Dlww.xml.idXPathExpr`:::
-XMl XPath expressions for the document id.
-+
-_Default_: `none`. _Required_: No.
-
-`-Dww.xml.includeParentAttrsPrefix`:::
-Pull parent node attributes by adding a prefix, if desired.
-+
-_Default_: `none`. _Required_: No.
-
-`-Dlww.xml.start`:::
-The start key tag from the xml.
-+
-_Default_: `none`. _Required_: Yes.
-
-`-Dlww.xml.end`:::
-The end key tag from the xml.
-+
-_Default_: `none`. _Required_: Yes.
-
-
-Other arguments not described here (such as Hadoop-specific system arguments) can be supplied as needed and they will be added to the Hadoop configuration. These arguments should be defined with the `-Dargument=value` syntax.
+Other arguments not described in this repo's documentation (such as Hadoop-specific system arguments) can be supplied as needed and they will be added to the Hadoop configuration. These arguments should be defined with the `-Dargument=value` syntax.
 // end::mapper-args[]
 
 // tag::key-value-pairs[]
-=== Key-Value Pair Arguments
+==== Key-Value Pair Arguments
 Key-value pair arguments apply to the ingest job generally. These arguments are expressed as `-argument value`. They are the last arguments supplied before the jar name is defined.
 
-There are several possible arguments:
-
-`-cls`::
-_Required_.
-+
-The ingest mapper class. This class must correspond to the content being indexed to ensure proper parsing of documents. See the section <<Ingest Mappers>> for a detailed explanation of each available ingest mapper.
-+
-* `com.lucidworks.hadoop.ingest.GrokIngestMapper`
-* `com.lucidworks.hadoop.ingest.CSVIngestMapper`
-* `com.lucidworks.hadoop.ingest.DirectoryIngestMapper`
-* `com.lucidworks.hadoop.ingest.RegexIngestMapper`
-* `com.lucidworks.hadoop.ingest.SequenceFileIngestMapper`
-* `com.lucidworks.hadoop.ingest.SolrXMLIngestMapper`
-* `com.lucidworks.hadoop.ingest.WarcIngestMapper`
-* `com.lucidworks.hadoop.ingest.ZipIngestMapper`
-
-`-c`::
-_Required_.
-+
-The collection name where documents should be indexed. This collection must exist prior to running the Hadoop job jar.
-
-`-of`::
-_Required_.
-+
-The output format. For all cases, you can use the default `com.lucidworks.hadoop.io.LWMapRedOutputFormat`.
-
-`-i`::
-_Required_.
-+
-The path to the Hadoop input data. This path should point to the HDFS directory. If the defined location is not a specific filename, the syntax must include a wildcard expression to find documents, such as `/data/*`.
-
-`-s`::
-The Solr URL when running in standalone mode. In a default installation, this would be `\http://localhost:8983/solr`. Use this parameter when you are _not_ running in SolrCloud mode. If you are running Solr in SolrCloud mode, you should use `-zk` instead.
-
-`-zk`::
-A list of ZooKeeper hosts, followed by the ZooKeeper root directory. For example, `10.0.1.1:2181,10.0.1.2:2181,10.0.1.3:2181/solr` would be a valid value.
-+
-This parameter is used when running in SolrCloud mode, and allows the output of the ingest process to be routed via ZooKeeper to any available node. If you are _not_ running in SolrCloud mode, use the `-s` argument instead.
-
-`-redcls`::
-The class name of a custom IngestReducer, if any. In order for this to be invoked, you must also set `-ur` to a value higher than 0. If no value is specified, then the default reducer is used, which is `com.lucidworks.hadoop.ingest.IngestReducer`.
-
-`-ur`::
-The number of reducers to use when outputting to the OutputFormat. Depending on the output format and your system resources, you may wish to have Hadoop do a reduce step so the output resource is not overwhelmed. The default is **0**, which is to not use any reducers.
+For more information see https://github.com/lucidworks/hadoop-solr/wiki/KeyValuePairArguments[Key-Value Pair Arguments].
 // end::key-value-pairs[]
 // end::job-jar-args[]
 
-// tag::summary[]
-=== Summary of Argument Order
+// tag::example[]
+=== Example Job
 
-Using this example job jar argument:
+This is a simple job request to index a CSV file which demonstrates the order of the arguments:
 
 [source,bash,subs="verbatim,attributes"]
 ----
@@ -426,11 +199,11 @@ We can summarize the proper order as follows:
 <2> The main ingest class.
 <3> Mapper arguments, which vary depending on the Mapper class chosen, in the format of `-Dargument=value`.
 <4> Key-value arguments, which include the ingest mapper, Solr collection name, and other parameters, in the format of `-argument value`.
-// end::summary[]
+// end::example[]
 // end::how-to-use[]
 
 // tag::contribute[]
-== How to contribute
+== How to Contribute
 
 . Fork this repo i.e. <username|organization>/hadoop-solr, following the http://help.github.com/fork-a-repo/[fork a repo/] tutorial. Then, clone the forked repo on your local machine:
 +
