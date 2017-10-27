@@ -51,7 +51,7 @@ After cloning `hadoop-solr`, but before building the job jar, you must first ini
    hadoop-solr $ cd solr-hadoop-common
    hadoop-solr/solr-hadoop-common $ git checkout <SHA>
    hadoop-solr/solr-hadoop-common $ cd ..
----
+----
 
 Once the submodule has been pulled, you can build the job jar with this command:
 
