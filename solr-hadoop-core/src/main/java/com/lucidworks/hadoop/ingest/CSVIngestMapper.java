@@ -85,20 +85,20 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
     }
     String stratStr = conf.get(CSV_STRATEGY, DEFAULT_STRATEGY);
     if (stratStr.equalsIgnoreCase(DEFAULT_STRATEGY)) {
-      strategy = CSVStrategy.DEFAULT_STRATEGY;
+      strategy = copyStrategy(CSVStrategy.DEFAULT_STRATEGY);
       // Only change the delimiter for DEFAULT and EXCEL
       if (delimiterStr != null && !delimiterStr.isEmpty() && !delimiterStr
           .equals(strategy.getDelimiter() + "")) {
         strategy.setDelimiter(delimiterStr.charAt(0));
       }
     } else if (stratStr.equalsIgnoreCase(EXCEL_STRATEGY)) {
-      strategy = CSVStrategy.EXCEL_STRATEGY;
+      strategy = copyStrategy(CSVStrategy.EXCEL_STRATEGY);
       if (delimiterStr != null && !delimiterStr.isEmpty() && !delimiterStr
           .equals(strategy.getDelimiter() + "")) {
         strategy.setDelimiter(delimiterStr.charAt(0));
       }
     } else if (stratStr.equalsIgnoreCase(TAB_DELIM_STRATEGY)) {
-      strategy = CSVStrategy.TDF_STRATEGY;
+      strategy = copyStrategy(CSVStrategy.TDF_STRATEGY);
     } else {
       try {
         Class<? extends CSVStrategy> stratClass = Class.forName(stratStr)
@@ -186,5 +186,19 @@ public class CSVIngestMapper extends AbstractIngestMapper<LongWritable, Text> {
   @Override
   public AbstractJobFixture getFixture() {
     return fixture;
+  }
+
+  /*
+   * CSVStrategy objects have several mutators that allow their behavior to be customize by consumers.  These are
+   * convenient in the general case, but introduce trappy behavior when used with static/predefined strategies such as
+   * {@link CSVStrategy#DEFAULT}.
+   *
+   * This method copies the provided CSVStrategy, so that mutators can be safely used with the static CSVStrategy
+   * constants.
+   */
+  private CSVStrategy copyStrategy(CSVStrategy strategy) {
+    return new CSVStrategy(strategy.getDelimiter(), strategy.getEncapsulator(), strategy.getCommentStart(),
+            strategy.getEscape(), strategy.getIgnoreLeadingWhitespaces(), strategy.getIgnoreTrailingWhitespaces(),
+            strategy.getUnicodeEscapeInterpretation(), strategy.getIgnoreEmptyLines());
   }
 }
