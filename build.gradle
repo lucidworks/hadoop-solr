@@ -14,6 +14,8 @@ task wrapper(type: Wrapper) {
     gradleVersion = '3.4.1'
 }
 
+
+
 ext {
   publishedProjects = subprojects - project(':solr-hadoop-common')
 }
@@ -33,15 +35,48 @@ subprojects {
       mavenCentral()
     }
 
+    project.configurations {
+      hadoop2Compile.extendsFrom(project.configurations.compile)
+      hadoop2TestCompile.extendsFrom(project.configurations.testCompile)
+      hadoop2TestRuntime.extendsFrom(project.configurations.testRuntime)
+      // Ensure that "project()" deps elsewhere still a copy of the hadoop classes
+      it."default".extendsFrom(project.configurations.hadoop2Compile)
+
+      hadoop3Compile.extendsFrom(project.configurations.compile)
+      hadoop3TestCompile.extendsFrom(project.configurations.testCompile)
+      hadoop3TestRuntime.extendsFrom(project.configurations.testRuntime)
+    }
+
     gradle.projectsEvaluated {
       tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
       }
     }
 
+    task testHadoop2(type: Test) {
+      classpath = configurations.hadoop2TestRuntime + sourceSets.main.output + sourceSets.test.output
+      reports.html.destination = file("$buildDir/reports/tests/hadoop2")
+      reports.junitXml.destination = file("$buildDir/test-results/hadoop2")
+    }
+
+    task testHadoop3(type: Test) {
+      classpath = configurations.hadoop3TestRuntime + sourceSets.main.output + sourceSets.test.output
+      reports.html.destination = file("$buildDir/reports/tests/hadoop3")
+      reports.junitXml.destination = file("$buildDir/test-results/hadoop3")
+    }
+
     test {
-      reports.html.destination = file("$buildDir/reports/tests")
-      reports.junitXml.destination = file("$buildDir/test-results")
+      actions = []
+      dependsOn 'testHadoop2'
+      dependsOn 'testHadoop3'
+    }
+
+    compileTestJava {
+      classpath = configurations.hadoop2TestCompile + sourceSets.main.output
+    }
+
+    compileJava {
+      classpath = configurations.hadoop2Compile
     }
 
     jacocoTestReport {
@@ -95,20 +130,17 @@ project('solr-hadoop-core') {
     compile("org.apache.solr:solr-solrj:${solrVersion}") {
       exclude group: 'org.apache.hadoop'
     }
-    compile("org.apache.hadoop:hadoop-common:${hadoop2Version}@jar")
-    compile("org.apache.hadoop:hadoop-client:${hadoop2Version}") {
-      exclude group: 'log4j'
-      exclude group: 'org.slf4j'
-    }
-    compile("org.apache.hadoop:hadoop-auth:${hadoop2Version}") {
-      transitive = false
-    }
-    compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoop2Version}") {
-      transitive = false
-    }
-    compile("org.apache.hadoop:hadoop-hdfs:${hadoop2Version}@jar") {
-      transitive = false
-    }
+    hadoop2Compile("org.apache.hadoop:hadoop-common:${hadoop2Version}@jar")
+    hadoop2Compile("org.apache.hadoop:hadoop-client:${hadoop2Version}") { exclude group: 'log4j' exclude group: 'org.slf4j' }
+    hadoop2Compile("org.apache.hadoop:hadoop-auth:${hadoop2Version}") { transitive = false }
+    hadoop2Compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoop2Version}") { transitive = false }
+    hadoop2Compile("org.apache.hadoop:hadoop-hdfs:${hadoop2Version}@jar") { transitive = false }
+
+    hadoop3Compile("org.apache.hadoop:hadoop-common:${hadoop3Version}@jar")
+    hadoop3Compile("org.apache.hadoop:hadoop-client:${hadoop3Version}") { exclude group: 'log4j' exclude group: 'org.slf4j' }
+    hadoop3Compile("org.apache.hadoop:hadoop-auth:${hadoop3Version}") { transitive = false }
+    hadoop3Compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoop3Version}") { transitive = false }
+    hadoop3Compile("org.apache.hadoop:hadoop-hdfs:${hadoop3Version}@jar") { transitive = false }
 
     compile('org.jruby:jruby-complete:1.7.11')
 
