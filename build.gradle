@@ -113,7 +113,10 @@ project('solr-hadoop-core') {
       transitive = false
     }
     compile("org.apache.solr:solr-commons-csv:3.5.0")
-    compile("org.apache.mahout:mahout-core:${mahoutVersion}") {
+    compile("org.apache.mahout:mahout-mr:${mahoutVersion}") {
+      transitive = false
+    }
+    compile("org.apache.mahout:mahout-hdfs:${mahoutVersion}") {
       transitive = false
     }
     // TODO:check deps
