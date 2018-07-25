@@ -7,7 +7,8 @@ buildscript {
 }
 
 plugins {
-  id 'com.github.johnrengelman.shadow' version '1.2.4'
+  id 'com.github.johnrengelman.shadow' version '2.0.2'
+  id 'maven-publish'
 }
 
 task wrapper(type: Wrapper) {
@@ -198,10 +199,11 @@ project('solr-hadoop-job') {
 
   }
 
+  apply plugin: 'maven-publish'
   publishing {
     publications {
       shadow(MavenPublication) {
-        from components.shadow
+        project.shadow.component(it)
       }
     }
   }
