@@ -38,14 +38,16 @@ subprojects {
 
     project.configurations {
       hadoop2Compile.extendsFrom(project.configurations.compile)
+      hadoop2Runtime.extendsFrom(project.configurations.runtime, hadoop2Compile)
       hadoop2TestCompile.extendsFrom(project.configurations.testCompile)
-      hadoop2TestRuntime.extendsFrom(project.configurations.testRuntime)
+      hadoop2TestRuntime.extendsFrom(project.configurations.testRuntime, hadoop2TestCompile, hadoop2Compile)
       // Ensure that "project()" deps elsewhere still a copy of the hadoop classes
       it."default".extendsFrom(project.configurations.hadoop2Compile)
 
       hadoop3Compile.extendsFrom(project.configurations.compile)
+      hadoop3Runtime.extendsFrom(project.configurations.runtime, hadoop3Compile)
       hadoop3TestCompile.extendsFrom(project.configurations.testCompile)
-      hadoop3TestRuntime.extendsFrom(project.configurations.testRuntime)
+      hadoop3TestRuntime.extendsFrom(project.configurations.testRuntime, hadoop3TestCompile, hadoop3Compile)
     }
 
     gradle.projectsEvaluated {
@@ -110,9 +112,6 @@ subprojects {
 project('solr-hadoop-core') {
 
   dependencies {
-    compile(project(':solr-hadoop-common:solr-hadoop-io')) {
-      transitive = false
-    }
     compile("org.apache.solr:solr-commons-csv:3.5.0")
     compile("org.apache.mahout:mahout-mr:${mahoutVersion}") {
       transitive = false
@@ -134,17 +133,22 @@ project('solr-hadoop-core') {
     compile("org.apache.solr:solr-solrj:${solrVersion}") {
       exclude group: 'org.apache.hadoop'
     }
+
+    hadoop2Compile(project(path: ':solr-hadoop-common:solr-hadoop-io', configuration: 'hadoop2Runtime')) { transitive = false }
     hadoop2Compile("org.apache.hadoop:hadoop-common:${hadoop2Version}@jar")
     hadoop2Compile("org.apache.hadoop:hadoop-client:${hadoop2Version}") { exclude group: 'log4j' exclude group: 'org.slf4j' }
     hadoop2Compile("org.apache.hadoop:hadoop-auth:${hadoop2Version}") { transitive = false }
     hadoop2Compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoop2Version}") { transitive = false }
     hadoop2Compile("org.apache.hadoop:hadoop-hdfs:${hadoop2Version}@jar") { transitive = false }
+    hadoop2TestCompile(project(path: ':solr-hadoop-common:solr-hadoop-testbase', configuration: 'hadoop2Runtime'))
 
+    hadoop3Compile(project(path: ':solr-hadoop-common:solr-hadoop-io', configuration: 'hadoop3Runtime')) { transitive = false }
     hadoop3Compile("org.apache.hadoop:hadoop-common:${hadoop3Version}@jar")
     hadoop3Compile("org.apache.hadoop:hadoop-client:${hadoop3Version}") { exclude group: 'log4j' exclude group: 'org.slf4j' }
     hadoop3Compile("org.apache.hadoop:hadoop-auth:${hadoop3Version}") { transitive = false }
     hadoop3Compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoop3Version}") { transitive = false }
     hadoop3Compile("org.apache.hadoop:hadoop-hdfs:${hadoop3Version}@jar") { transitive = false }
+    hadoop3TestCompile(project(path: ':solr-hadoop-common:solr-hadoop-testbase', configuration: 'hadoop3Runtime'))
 
     compile('org.jruby:jruby-complete:1.7.11')
 
@@ -154,10 +158,8 @@ project('solr-hadoop-core') {
     testCompile "org.apache.lucene:lucene-analyzers-common:${solrVersion}"
     testCompile 'commons-collections:commons-collections:3.2.2'
 
-    testCompile "org.apache.solr:solr-test-framework:${solrVersion}"
     testCompile 'org.apache.mrunit:mrunit:1.0.0:hadoop2@jar'
 
-    testCompile(project(':solr-hadoop-common:solr-hadoop-testbase'))
   }
 }
 
