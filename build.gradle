@@ -160,6 +160,14 @@ project('solr-hadoop-core') {
 
     testCompile 'org.apache.mrunit:mrunit:1.0.0:hadoop2@jar'
 
+    hadoop2TestCompile("org.apache.hadoop:hadoop-minicluster:${hadoop2Version}") {
+      exclude group: "org.apache.zookeeper", module: "zookeeper"
+      exclude group: "org.apache.hadoop", module: "hadoop-mapreduce-client-jobclient"
+    }
+    hadoop3TestCompile("org.apache.hadoop:hadoop-minicluster:${hadoop3Version}") {
+      exclude group: "org.apache.zookeeper", module: "zookeeper"
+      exclude group: "org.apache.hadoop", module: "hadoop-mapreduce-client-jobclient"
+    }
   }
 }
 
