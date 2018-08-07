@@ -1,51 +1,54 @@
 package com.lucidworks.hadoop.ingest;
 
-import com.lucidworks.hadoop.io.LWDocument;
-import com.lucidworks.hadoop.io.LWDocumentWritable;
-import java.io.IOException;
-import java.util.List;
+import com.lucidworks.hadoop.io.ZipFileInputFormat;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mrunit.MapDriver;
-import org.apache.hadoop.mrunit.types.Pair;
-import org.junit.Assert;
-import org.junit.Before;
+import org.apache.hadoop.mapred.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.Job;
 import org.junit.Test;
 
-/**
- *
- *
- **/
-public class SipsIngestMapperTest extends BaseIngestMapperTestCase {
+import java.util.List;
 
-  private MapDriver<Text, DoubleWritable, Text, LWDocumentWritable> mapDriver;
+import static com.lucidworks.hadoop.utils.ConfigurationKeys.COLLECTION;
+import static com.lucidworks.hadoop.utils.ConfigurationKeys.ZK_CONNECT;
+import static junit.framework.TestCase.assertNotNull;
 
-  @Before
-  public void setUp() throws IOException {
-    SipsIngestMapper mapper = new SipsIngestMapper();
-    mapDriver = new MapDriver<Text, DoubleWritable, Text, LWDocumentWritable>();
-    mapDriver.setConfiguration(createConf());
+public class SipsIngestMapperTest extends BaseMiniClusterTestCase {
+    @Test
+    public void test() throws Exception {
+        Configuration conf = getDefaultSipsIngestMapperConfiguration();
+        create100EntrySequenceFile(conf);
+        Job job = createJobBasedOnConfiguration(conf, SipsIngestMapper.class);
+        ((JobConf)job.getConfiguration()).setInputFormat(SequenceFileInputFormat.class);
 
-    mapDriver.setMapper(mapper);
-    Configuration conf = mapDriver.getConfiguration();
-    setupCommonConf(conf);
-    mapper.getFixture().init(new JobConf(mapDriver.getConfiguration()));
-  }
+        final List<String> results = runJobSuccessfully(job,100);
 
-  @Test
-  public void test() throws Exception {
-    for (int i = 0; i < 100; i++) {
-      mapDriver.withInput(new Text("sip_" + i), new DoubleWritable(i / 100.0));
+        assertNumDocsProcessed(job, 100);
+        for (String docString : results) {
+            assertNotNull(docString);
+        }
     }
 
-    mapDriver.withCounter(BaseHadoopIngest.Counters.DOCS_ADDED, 100);
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(100, run.size());
-    LWDocument doc = run.get(0).getSecond().getLWDocument();
-    Assert.assertNotNull("document is null", doc);
-    Assert.assertTrue(doc.getId().startsWith("sip_"));
+    private void create100EntrySequenceFile(Configuration conf) throws Exception {
+        try (SequenceFile.Writer writer = SequenceFile.createWriter(conf, SequenceFile.Writer.file(new Path(INPUT_DIRECTORY_PATH, "sip_info.txt")),
+                    SequenceFile.Writer.keyClass(Text.class), SequenceFile.Writer.valueClass(DoubleWritable.class))) {
+            for (int i = 0; i < 100; i++) {
+                writer.append(new Text("sip_" + i), new DoubleWritable(i / 100.0));
+            }
+        }
+    }
 
-  }
+    private Configuration getDefaultSipsIngestMapperConfiguration() {
+        Configuration conf = getBaseConfiguration();
+        conf.set(COLLECTION, "collection");
+        conf.set(ZK_CONNECT, "localhost:0000");
+        conf.set("idField", "id");
+
+        return conf;
+    }
 }

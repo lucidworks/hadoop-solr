@@ -1,293 +1,190 @@
 package com.lucidworks.hadoop.ingest;
 
-import com.lucidworks.hadoop.ingest.util.GrokHelper;
-import com.lucidworks.hadoop.io.LWDocument;
-import com.lucidworks.hadoop.io.LWDocumentProvider;
-import com.lucidworks.hadoop.io.LWDocumentWritable;
-import java.io.File;
-import java.util.List;
+import com.lucidworks.hadoop.cache.DistributedCacheHandler;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mrunit.MapDriver;
-import org.apache.hadoop.mrunit.types.Pair;
-import org.jruby.Ruby;
-import org.jruby.RubyArray;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.apache.hadoop.mapreduce.Job;
 import org.junit.Test;
 
-public class GrokIngestMapperTest extends BaseIngestMapperTestCase {
+import java.io.File;
+import java.util.List;
 
-  private MapDriver<LongWritable, Text, Text, LWDocumentWritable> mapDriver;
-  private JobConf jobConf;
-  private GrokIngestMapper mapper;
+import static com.lucidworks.hadoop.utils.ConfigurationKeys.COLLECTION;
+import static com.lucidworks.hadoop.utils.ConfigurationKeys.ZK_CONNECT;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 
-  @Before
-  public void setUp() throws Exception {
-    mapper = new GrokIngestMapper();
-    mapDriver = new MapDriver<LongWritable, Text, Text, LWDocumentWritable>();
-    mapDriver.setConfiguration(createConf());
+public class GrokIngestMapperTest extends BaseMiniClusterTestCase {
 
-    mapDriver.setMapper(mapper);
-    Configuration configuration = mapDriver.getConfiguration();
+    private static final String LOCAL_IP_WORD_CONF_LOCATION = GrokIngestMapperTest.class.getClassLoader()
+            .getResource("grok" + File.separator + "IP-WORD.conf").getPath();
+    private static final String LOCAL_DATE_CONF_LOCATION = GrokIngestMapperTest.class.getClassLoader()
+            .getResource("grok" + File.separator + "Month-Day-Year-Greedy.conf").getPath();
+    private static final String LOCAL_CISCO_CONF_LOCATION = GrokIngestMapperTest.class.getClassLoader()
+            .getResource("grok" + File.separator + "CISCO.conf").getPath();
+    private static final String LOCAL_SYSLOG_CONF_LOCATION = GrokIngestMapperTest.class.getClassLoader()
+            .getResource("grok" + File.separator + "Syslog.conf").getPath();
+    private static final String LOCAL_FIREWALL_CONF_LOCATION = GrokIngestMapperTest.class.getClassLoader()
+            .getResource("grok" + File.separator + "firewall.conf").getPath();
+    private static final String LOCAL_CUSTOM_CONF_LOCATION = GrokIngestMapperTest.class.getClassLoader()
+            .getResource("grok" + File.separator + "customPattern.conf").getPath();
+    private static final String LOCAL_EXTRA_PATTERNS_LOCATION = GrokIngestMapperTest.class.getClassLoader()
+            .getResource("grok" + File.separator + "extra_patterns.txt").getPath();
 
-    setupCommonConf(configuration);
-    jobConf = new JobConf(configuration);
-  }
+    @Test
+    public void testIPWORDpattern() throws Exception {
+        jobInput.add("192.168.1.1 WORD__1 This is the rest of the message");
 
-  @Test
-  public void testIPWORDpattern() throws Exception {
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "IP-WORD.conf").getPath());
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
+        Configuration conf = getDefaultGrokIngestMapperConfiguration();
+        Path remotePath = copyLocalResourceToHdfs(LOCAL_IP_WORD_CONF_LOCATION,"IP-WORD.conf");
+        conf.set(GrokIngestMapper.GROK_CONFIG_PATH, remotePath.toUri().toString());
+        jobCacheUris.add(remotePath.toUri());
+        Job job = createJobBasedOnConfiguration(conf, GrokIngestMapper.class);
+        DistributedCacheHandler.addFileToCache((org.apache.hadoop.mapred.JobConf)job.getConfiguration(),
+                new Path(LOCAL_IP_WORD_CONF_LOCATION), GrokIngestMapper.GROK_CONFIG_PATH);
+        ((JobConf)job.getConfiguration()).set(GrokIngestMapper.GROK_URI, new Path(LOCAL_IP_WORD_CONF_LOCATION).toUri().toString());
 
-    LongWritable lineNumb = new LongWritable(10);
+        List<String> results = runJobSuccessfully(job, jobInput, 1);
 
-    String message = "192.168.1.1 WORD__1 This is the rest of the message";
-    mapDriver.withInput(lineNumb, new Text(message));
+        assertNumDocsProcessed(job, 1);
+    }
 
-    // TODO: Check Fields
-  }
+    @Test
+    public void testGrokFail() throws Exception {
+        jobInput.add("some non-matching string");
 
-  @Test
-  public void testGrokFail() throws Exception {
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "IP-WORD.conf").getPath());
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
+        Configuration conf = getDefaultGrokIngestMapperConfiguration();
+        Path remotePath = copyLocalResourceToHdfs(LOCAL_IP_WORD_CONF_LOCATION,"IP-WORD.conf");
+        conf.set(GrokIngestMapper.GROK_CONFIG_PATH, remotePath.toUri().toString());
+        jobCacheUris.add(remotePath.toUri());
+        Job job = createJobBasedOnConfiguration(conf, GrokIngestMapper.class);
+        DistributedCacheHandler.addFileToCache((org.apache.hadoop.mapred.JobConf)job.getConfiguration(),
+                new Path(LOCAL_IP_WORD_CONF_LOCATION), GrokIngestMapper.GROK_CONFIG_PATH);
+        ((JobConf)job.getConfiguration()).set(GrokIngestMapper.GROK_URI, new Path(LOCAL_IP_WORD_CONF_LOCATION).toUri().toString());
 
-    LongWritable lineNumb = new LongWritable(10);
+        List<String> results = runJobSuccessfully(job, jobInput, 1);
 
-    String message = "non matching string";
-    mapDriver.withInput(lineNumb, new Text(message));
+        assertNumDocsProcessed(job, 1);
+        assertTrue(results.get(0).contains("tags=_grokparsefailure"));
+    }
 
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(1, run.size());
+    @Test
+    public void testMonthDayYearGreedy() throws Exception {
+        jobInput.add("Jan 05 2014 key1=value1 key2=value2 key3=value3");
 
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    // TODO: Check Fields
-  }
+        Configuration conf = getDefaultGrokIngestMapperConfiguration();
+        Path remotePath = copyLocalResourceToHdfs(LOCAL_DATE_CONF_LOCATION,"Month-Day-Year-Greedy.conf");
+        conf.set(GrokIngestMapper.GROK_CONFIG_PATH, remotePath.toUri().toString());
+        jobCacheUris.add(remotePath.toUri());
+        Job job = createJobBasedOnConfiguration(conf, GrokIngestMapper.class);
+        DistributedCacheHandler.addFileToCache((org.apache.hadoop.mapred.JobConf)job.getConfiguration(),
+                new Path(LOCAL_DATE_CONF_LOCATION), GrokIngestMapper.GROK_CONFIG_PATH);
+        ((JobConf)job.getConfiguration()).set(GrokIngestMapper.GROK_URI, new Path(LOCAL_DATE_CONF_LOCATION).toUri().toString());
 
-  @Test
-  public void testMonthDayYearGreedy() throws Exception {
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "Month-Day-Year-Greedy.conf").getPath());
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
+        List<String> results = runJobSuccessfully(job, jobInput, 1);
 
-    LongWritable lineNumb = new LongWritable(10);
+        assertNumDocsProcessed(job, 1);
+        assertNotNull(results.get(0));
+    }
 
-    String message = "Jan 05 2014 key1=value1 key2=value2 key3=value3";
-    mapDriver.withInput(lineNumb, new Text(message));
+    @Test
+    public void testGrokFail2() throws Exception {
+        jobInput.add("some non-matching string");
 
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(1, run.size());
+        Configuration conf = getDefaultGrokIngestMapperConfiguration();
+        Path remotePath = copyLocalResourceToHdfs(LOCAL_DATE_CONF_LOCATION,"Month-Day-Year-Greedy.conf");
+        conf.set(GrokIngestMapper.GROK_CONFIG_PATH, remotePath.toUri().toString());
+        jobCacheUris.add(remotePath.toUri());
+        Job job = createJobBasedOnConfiguration(conf, GrokIngestMapper.class);
+        DistributedCacheHandler.addFileToCache((org.apache.hadoop.mapred.JobConf)job.getConfiguration(),
+                new Path(LOCAL_DATE_CONF_LOCATION), GrokIngestMapper.GROK_CONFIG_PATH);
+        ((JobConf)job.getConfiguration()).set(GrokIngestMapper.GROK_URI, new Path(LOCAL_DATE_CONF_LOCATION).toUri().toString());
 
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    Assert.assertNotNull(doc);
-    // TODO: Check Fields
-  }
+        List<String> results = runJobSuccessfully(job, jobInput, 1);
 
-  @Test
-  public void testGrok2Fail() throws Exception {
+        assertNumDocsProcessed(job, 1);
+        assertTrue(results.get(0).contains("tags=_grokparsefailure"));
+    }
 
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "Month-Day-Year-Greedy.conf").getPath());
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
+    @Test
+    public void testCISCOPattern() throws Exception {
+        jobInput.add("Mar 20 2014 20:10:45 key1=value1 key2=value2 key3=value3");
 
-    LongWritable lineNumb = new LongWritable(10);
+        Configuration conf = getDefaultGrokIngestMapperConfiguration();
+        Path remotePath = copyLocalResourceToHdfs(LOCAL_CISCO_CONF_LOCATION,"CISCO.conf");
+        conf.set(GrokIngestMapper.GROK_CONFIG_PATH, remotePath.toUri().toString());
+        jobCacheUris.add(remotePath.toUri());
+        Job job = createJobBasedOnConfiguration(conf, GrokIngestMapper.class);
+        DistributedCacheHandler.addFileToCache((org.apache.hadoop.mapred.JobConf)job.getConfiguration(),
+                new Path(LOCAL_CISCO_CONF_LOCATION), GrokIngestMapper.GROK_CONFIG_PATH);
+        ((JobConf)job.getConfiguration()).set(GrokIngestMapper.GROK_URI, new Path(LOCAL_CISCO_CONF_LOCATION).toUri().toString());
 
-    String message = "non matching string";
-    mapDriver.withInput(lineNumb, new Text(message));
+        List<String> results = runJobSuccessfully(job, jobInput, 1);
 
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(1, run.size());
+        assertNumDocsProcessed(job, 1);
+        assertNotNull(results.get(0));
+    }
 
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    // TODO: Check Fields
-  }
+    @Test
+    public void testSyslog() throws Exception {
+        jobInput.add("<34>Oct 11 22:14:15 192.168.1.10 su: 'su root' failed for lonvick on /dev/pts/8");
 
-  @Test
-  public void testCISCOPattern() throws Exception {
-    // Adding configuration file
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "CISCO.conf").getPath());
+        Configuration conf = getDefaultGrokIngestMapperConfiguration();
+        Path remotePath = copyLocalResourceToHdfs(LOCAL_SYSLOG_CONF_LOCATION,"Syslog.conf");
+        conf.set(GrokIngestMapper.GROK_CONFIG_PATH, remotePath.toUri().toString());
+        jobCacheUris.add(remotePath.toUri());
+        Job job = createJobBasedOnConfiguration(conf, GrokIngestMapper.class);
+        DistributedCacheHandler.addFileToCache((org.apache.hadoop.mapred.JobConf)job.getConfiguration(),
+                new Path(LOCAL_SYSLOG_CONF_LOCATION), GrokIngestMapper.GROK_CONFIG_PATH);
+        ((JobConf)job.getConfiguration()).set(GrokIngestMapper.GROK_URI, new Path(LOCAL_SYSLOG_CONF_LOCATION).toUri().toString());
 
-    // Adding extra patterns file
-    Ruby runtime = Ruby.newInstance();
-    RubyArray rubyArray = RubyArray.newArray(runtime);
-    rubyArray.add(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "extra_patterns.txt").getPath());
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
+        List<String> results = runJobSuccessfully(job, jobInput, 1);
 
-    LongWritable lineNumb = new LongWritable(10);
+        assertNumDocsProcessed(job, 1);
+        assertNotNull(results.get(0));
+    }
 
-    String message = "Mar 20 2014 20:10:45 key1=value1 key2=value2 key3=value3";
-    mapDriver.withInput(lineNumb, new Text(message));
+    @Test
+    public void testFirewall() throws Exception {
+        jobInput.add("Mar 31 2014 18:02:36: %ASA-5-106100: access-list inbound denied tcp outside/128.241.220.82(3154) -> asp3/62.84.96.19(32005) hit-cnt 1 first hit [0x91c26a3, 0x0]");
 
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(1, run.size());
+        Configuration conf = getDefaultGrokIngestMapperConfiguration();
+        Path remotePath = copyLocalResourceToHdfs(LOCAL_FIREWALL_CONF_LOCATION,"firewall.conf");
+        conf.set(GrokIngestMapper.GROK_CONFIG_PATH, remotePath.toUri().toString());
+        jobCacheUris.add(remotePath.toUri());
+        Job job = createJobBasedOnConfiguration(conf, GrokIngestMapper.class);
+        DistributedCacheHandler.addFileToCache((org.apache.hadoop.mapred.JobConf)job.getConfiguration(),
+                new Path(LOCAL_FIREWALL_CONF_LOCATION), GrokIngestMapper.GROK_CONFIG_PATH);
+        ((JobConf)job.getConfiguration()).set(GrokIngestMapper.GROK_URI, new Path(LOCAL_FIREWALL_CONF_LOCATION).toUri().toString());
 
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    Assert.assertNotNull(doc);
-    // TODO: Check Fields
-  }
+        List<String> results = runJobSuccessfully(job, jobInput, 1);
 
-  @Test
-  public void testSyslog() throws Exception {
+        assertNumDocsProcessed(job, 1);
+        assertNotNull(results.get(0));
+    }
 
-    // Adding configuration file
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "Syslog.conf").getPath());
+    @Test
+    public void testAdditionalPattern() throws Exception {
+        //TODO This test was temporarily removed when switching away from mrunit, as it's hard to simulate without the
+        // direct control that mrunit afforded us.  We need to come up with an alternative way to test
+        // this functionality
+    }
 
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
+    @Test
+    public void testByteOffsetField() {
+        //TODO This test was temporarily removed when switching away from mrunit, as it's hard to simulate without the
+        // direct control that mrunit afforded us.  We need to come up with an alternative way to test
+        // this functionality
+    }
 
-    LongWritable lineNumb = new LongWritable(10);
+    private Configuration getDefaultGrokIngestMapperConfiguration() throws Exception {
+        Configuration conf = getBaseConfiguration();
+        conf.set("io.serializations", "com.lucidworks.hadoop.io.impl.LWMockSerealization");
+        conf.set(COLLECTION, "collection");
+        conf.set(ZK_CONNECT, "localhost:0000");
+        conf.set("idField", "id");
 
-    String message = "<34>Oct 11 22:14:15 192.168.1.10 su: 'su root' failed for lonvick on /dev/pts/8";
-    mapDriver.withInput(lineNumb, new Text(message));
-
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(1, run.size());
-
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    Assert.assertNotNull(doc);
-    // TODO: Check Fields
-  }
-
-  @Test
-  public void testFirewall() throws Exception {
-
-    // Adding configuration file
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "firewall.conf").getPath());
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
-
-    LongWritable lineNumb = new LongWritable(10);
-
-    String message = "Mar 31 2014 18:02:36: %ASA-5-106100: access-list inbound denied tcp outside/128.241.220.82(3154) -> asp3/62.84.96.19(32005) hit-cnt 1 first hit [0x91c26a3, 0x0]";
-    mapDriver.withInput(lineNumb, new Text(message));
-
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(1, run.size());
-
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    Assert.assertNotNull(doc);
-    // TODO: Check Fields
-  }
-
-  @Ignore
-  @Test
-  public void testAdditionalPattern() throws Exception {
-
-    // Generate the HDFS hierarchy
-    FileSystem fs = FileSystem.getLocal(jobConf);
-    Path dir = new Path(fs.getWorkingDirectory(), "build");
-    Path sub = new Path(dir, "GHT");
-    Path tempDir = new Path(sub, "tmp-dir");
-    Path base = new Path(sub, "tmp-dir-2");
-    fs.mkdirs(tempDir);
-
-    // Copy extra patterns file to HDFS
-    Path dst = new Path(base, "extra_patterns.txt");
-    Path src = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "extra_patterns.txt").getPath());
-    fs.copyFromLocalFile(src, dst);
-
-    // Adding configuration file
-    Path confPath = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "customPattern.conf").toURI().getPath());
-
-    // Adding extra patterns file
-    Ruby runtime = Ruby.newInstance();
-    RubyArray rubyArray = RubyArray.newArray(runtime);
-    rubyArray.add(
-        base.toUri().getPath() + File.separator + "extra_patterns.txt");
-    GrokHelper.addPatternDirToDC(rubyArray, jobConf);
-    jobConf.set(GrokIngestMapper.GROK_URI, confPath.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
-
-    LongWritable lineNumb = new LongWritable(10);
-
-    String message = "192.168.1.1 123456 rest of the message";
-    mapDriver.withInput(lineNumb, new Text(message));
-
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(1, run.size());
-
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    Assert.assertNotNull(doc);
-    // TODO: Check Fields
-  }
-
-  @Test
-  public void testByteOffsetField() throws Exception {
-    Path path = new Path(GrokIngestMapperTest.class.getClassLoader()
-        .getResource("grok" + File.separator + "IP-WORD.conf").getPath());
-    jobConf.set(GrokIngestMapper.GROK_URI, path.toString());
-    mapper.getFixture().init(jobConf);
-    mapDriver.withConfiguration(jobConf);
-    String splitFilePath = "/path/to/log";
-    mapDriver.setMapInputPath(new Path(splitFilePath));
-
-    int offset = 0;
-    LongWritable offset1 = new LongWritable(offset);
-    String message1 = "192.168.1.1 WORD__1 This is the rest of the message";
-
-    LongWritable offset2 = new LongWritable(offset + message1.length());
-    String message2 = "112.37.117.33 WORD__2 This is the rest of the message";
-    mapDriver.withInput(offset1, new Text(message1));
-    mapDriver.withInput(offset2, new Text(message2));
-
-    List<Pair<Text, LWDocumentWritable>> run = mapDriver.run();
-    Assert.assertEquals(2, run.size());
-
-    // Verifying first document
-    Pair<Text, LWDocumentWritable> pair = run.get(0);
-    LWDocument doc = pair.getSecond().getLWDocument();
-    Assert.assertNotNull(doc);
-
-    // TODO: Check Fields
-  }
+        return conf;
+    }
 }

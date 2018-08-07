@@ -20,17 +20,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class BaseMiniClusterTestCase {
 
-    protected static final Path INPUT_DIRECTORY_PATH = new Path("testing/data/input");
+    protected static final Path DEFAULT_INPUT_DIRECTORY_PATH = new Path("testing/data/input");
+    protected static Path INPUT_DIRECTORY_PATH = DEFAULT_INPUT_DIRECTORY_PATH;
     protected static final Path OUTPUT_DIRECTORY_PATH = new Path("testing/data/output");
+    protected static final Path RESOURCE_DIRECTORY_PATH = new Path("testing/data/resources");
     protected static final String CLUSTER_NAME = "cluster1";
     protected static final File testDataPath = new File(PathUtils.getTestDir(BaseMiniClusterTestCase.class), "miniclusters");
 
@@ -39,6 +40,7 @@ public class BaseMiniClusterTestCase {
     protected static FileSystem fs;
 
     protected List<String> jobInput;
+    protected List<URI> jobCacheUris;
 
     @BeforeClass
     public static void setUpCluster() throws Exception {
@@ -69,23 +71,28 @@ public class BaseMiniClusterTestCase {
 
     @Before
     public void setUp() throws Exception {
+        fs.delete(DEFAULT_INPUT_DIRECTORY_PATH, true);
         fs.delete(INPUT_DIRECTORY_PATH, true);
         fs.delete(OUTPUT_DIRECTORY_PATH, true);
 
         jobInput = new ArrayList<>();
+        jobCacheUris = new ArrayList<>();
     }
 
     @After
     public void tearDown() throws Exception {
+        fs.delete(DEFAULT_INPUT_DIRECTORY_PATH, true);
         fs.delete(INPUT_DIRECTORY_PATH, true);
         fs.delete(OUTPUT_DIRECTORY_PATH, true);
+
+        INPUT_DIRECTORY_PATH = DEFAULT_INPUT_DIRECTORY_PATH;
     }
 
     protected Configuration getBaseConfiguration() {
         return new HdfsConfiguration(clusterConf);
     }
 
-    protected Job createJobBasedOnConfiguration(Configuration baseConfiguration, Class mapperClazz) throws Exception{
+    protected Job createJobBasedOnConfiguration(Configuration baseConfiguration, Class mapperClazz) throws Exception {
         JobConf jobConf = new JobConf(baseConfiguration);
         jobConf.setMapperClass(mapperClazz);
         FileInputFormat.addInputPath(jobConf, INPUT_DIRECTORY_PATH);
@@ -106,9 +113,18 @@ public class BaseMiniClusterTestCase {
         fs.delete(OUTPUT_DIRECTORY_PATH, true);
 
         withJobInput(input);
+        if (! jobCacheUris.isEmpty()) {
+            job.setCacheFiles(cloneCacheUriList());
+        }
         job.waitForCompletion(true);
         assertTrue(job.isSuccessful());
 
+        return getJobResults(expectedLines);
+    }
+
+    protected List<String> runJobSuccessfully(Job job, int expectedLines) throws Exception {
+        job.waitForCompletion(true);
+        assertTrue(job.isSuccessful());
         return getJobResults(expectedLines);
     }
 
@@ -120,6 +136,23 @@ public class BaseMiniClusterTestCase {
             out.writeBytes("\n");
         }
         out.close();
+    }
+
+    protected Path copyLocalResourceToHdfs(String localPath, String remoteFilename) throws Exception {
+        return copyLocalFileToHdfs(localPath, RESOURCE_DIRECTORY_PATH, remoteFilename);
+    }
+
+    protected Path copyLocalInputToHdfs(String localPath, String remoteFilename) throws Exception {
+        return copyLocalFileToHdfs(localPath, INPUT_DIRECTORY_PATH, remoteFilename);
+    }
+
+    protected Path copyLocalFileToHdfs(String localPath, Path remotePath, String remoteFilename) throws Exception {
+        fs.mkdirs(RESOURCE_DIRECTORY_PATH);
+
+        final Path remotePathWithFilename = new Path(remotePath, remoteFilename);
+        fs.copyFromLocalFile(new Path(localPath), remotePathWithFilename);
+
+        return remotePathWithFilename;
     }
 
     protected List<String> getJobResults(int expectedLines) throws Exception {
@@ -158,5 +191,19 @@ public class BaseMiniClusterTestCase {
         }
         sb.append("])}");
         return sb.toString();
+    }
+
+    protected void assertNumDocsProcessed(Job job, int expectedNumDocs) throws Exception {
+        assertEquals("Expected [" + expectedNumDocs + "]", expectedNumDocs,
+                job.getCounters().findCounter(BaseHadoopIngest.Counters.DOCS_ADDED).getValue());
+    }
+
+    private URI[] cloneCacheUriList() {
+        final URI[] uris = new URI[jobCacheUris.size()];
+        for(int i = 0; i < jobCacheUris.size(); i++) {
+            uris[i] = jobCacheUris.get(i);
+        }
+
+        return uris;
     }
 }
