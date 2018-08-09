@@ -9,7 +9,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mrunit.MapDriver;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -30,7 +29,6 @@ import java.util.Map;
 
 public class GrokHelperTest {
 
-  private MapDriver<LongWritable, Text, Text, LWDocumentWritable> mapDriver;
   private JobConf jobConf;
   private Path base;
   private FileSystem fs;
@@ -39,13 +37,10 @@ public class GrokHelperTest {
 
   @Before
   public void setUp() throws IOException, URISyntaxException {
-    mapDriver = new MapDriver<LongWritable, Text, Text, LWDocumentWritable>();
 
-    Configuration configuration = new Configuration();
-    configuration.set("io.serializations", "com.lucidworks.hadoop.io.impl.LWMockSerealization");
-    mapDriver.setConfiguration(configuration);
+    Configuration conf = new Configuration();
+    conf.set("io.serializations", "com.lucidworks.hadoop.io.impl.LWMockSerealization");
 
-    Configuration conf = mapDriver.getConfiguration();
     fs = FileSystem.getLocal(conf);
     Path dir = new Path(fs.getWorkingDirectory(), "build");
     Path sub = new Path(dir, "GHT");
