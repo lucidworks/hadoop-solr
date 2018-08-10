@@ -138,6 +138,11 @@ public class BaseMiniClusterTestCase {
         out.close();
     }
 
+    protected void useAlternativeInputPath(String altInputPath) throws Exception {
+        INPUT_DIRECTORY_PATH = new Path(altInputPath);
+        fs.mkdirs(INPUT_DIRECTORY_PATH);
+    }
+
     protected Path copyLocalResourceToHdfs(String localPath, String remoteFilename) throws Exception {
         return copyLocalFileToHdfs(localPath, RESOURCE_DIRECTORY_PATH, remoteFilename);
     }
