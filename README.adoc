@@ -1,5 +1,5 @@
 :packageUser: solr
-:connectorVersion: 2.6.3
+:connectorVersion: 4.0.0
 
 = Hadoop Job Jar
 
@@ -22,10 +22,10 @@ This project includes tools to build a Hadoop job jar that can index documents f
 * Supports several types of content including SequenceFiles and CSV files.
 * Fully SolrCloud compatible.
 
-Supported versions:
+Tested versions:
 
-* Solr 5.x
-* Hadoop 2.4 and higher
+* Solr 6.x and higher
+* Hadoop 2.4 and higher, 3.1 and higher
 
 See the wiki page https://github.com/lucidworks/hadoop-solr/wiki/TestedDistros[Tested Distros] for more details on Hadoop distributions tested with this job jar.
 
